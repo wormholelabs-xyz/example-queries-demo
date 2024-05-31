@@ -72,7 +72,7 @@ const CONTRACTS = [
 //   "cfb12303a19cde580bb4dd771639b0d26bc68353645571a8cff516ab2ee113a0";
 const GET_STATE_CALL = eth.abi.encodeFunctionSignature("getState()");
 const GET_MY_COUNTER_CALL = eth.abi.encodeFunctionSignature("getMyCounter()");
-const QUERY_URL = "https://testnet.ccq.vaa.dev/v1/query";
+const QUERY_URL = "https://testnet.query.wormhole.com/v1/query";
 
 const decodeState = (bytes: string): QueryDemo.ChainEntryStructOutput[] =>
   QueryDemo__factory.createInterface().decodeFunctionResult(
