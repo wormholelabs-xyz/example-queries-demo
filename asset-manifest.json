@@ -1,10 +1,10 @@
 {
   "files": {
-    "main.js": "/example-queries-demo/static/js/main.383d3535.js",
+    "main.js": "/example-queries-demo/static/js/main.2fd37758.js",
     "index.html": "/example-queries-demo/index.html",
-    "main.383d3535.js.map": "/example-queries-demo/static/js/main.383d3535.js.map"
+    "main.2fd37758.js.map": "/example-queries-demo/static/js/main.2fd37758.js.map"
   },
   "entrypoints": [
-    "static/js/main.383d3535.js"
+    "static/js/main.2fd37758.js"
   ]
 }
