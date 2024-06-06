@@ -34,7 +34,7 @@
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
-    "gen": "cd .. && forge clean && forge build --skip test && typechain --target=ethers-v6 --out-dir ui/src/utils/contracts out/**/*.json"
+    "gen": "cd .. && forge clean && forge build --skip test && typechain --target=ethers-v6 --out-dir ui/src/utils/contracts out/**/*.json && cd ui && prettier -w ./src"
   },
   "eslintConfig": {
     "extends": [
@@ -59,7 +59,7 @@
   "devDependencies": {
     "@typechain/ethers-v6": "^0.5.1",
     "@types/react-router-dom": "^5.3.3",
-    "prettier": "^3.2.5",
+    "prettier": "^3.3.1",
     "typechain": "^8.3.2"
   }
 }

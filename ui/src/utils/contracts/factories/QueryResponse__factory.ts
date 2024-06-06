@@ -1088,7 +1088,7 @@ export class QueryResponse__factory {
   }
   static connect(
     address: string,
-    runner?: ContractRunner | null
+    runner?: ContractRunner | null,
   ): QueryResponse {
     return new Contract(address, _abi, runner) as unknown as QueryResponse;
   }
