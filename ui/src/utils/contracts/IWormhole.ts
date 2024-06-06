@@ -31,7 +31,7 @@ export declare namespace IWormhole {
 
   export type GuardianSetStructOutput = [
     keys: string[],
-    expirationTime: bigint
+    expirationTime: bigint,
   ] & { keys: string[]; expirationTime: bigint };
 
   export type SignatureStruct = {
@@ -45,7 +45,7 @@ export declare namespace IWormhole {
     r: string,
     s: string,
     v: bigint,
-    guardianIndex: bigint
+    guardianIndex: bigint,
   ] & { r: string; s: string; v: bigint; guardianIndex: bigint };
 
   export type VMStruct = {
@@ -73,7 +73,7 @@ export declare namespace IWormhole {
     payload: string,
     guardianSetIndex: bigint,
     signatures: IWormhole.SignatureStructOutput[],
-    hash: string
+    hash: string,
   ] & {
     version: bigint;
     timestamp: bigint;
@@ -99,7 +99,7 @@ export declare namespace IWormhole {
     module: string,
     action: bigint,
     chain: bigint,
-    newContract: string
+    newContract: string,
   ] & { module: string; action: bigint; chain: bigint; newContract: string };
 
   export type GuardianSetUpgradeStruct = {
@@ -115,7 +115,7 @@ export declare namespace IWormhole {
     action: bigint,
     chain: bigint,
     newGuardianSet: IWormhole.GuardianSetStructOutput,
-    newGuardianSetIndex: bigint
+    newGuardianSetIndex: bigint,
   ] & {
     module: string;
     action: bigint;
@@ -135,7 +135,7 @@ export declare namespace IWormhole {
     module: string,
     action: bigint,
     evmChainId: bigint,
-    newChainId: bigint
+    newChainId: bigint,
   ] & {
     module: string;
     action: bigint;
@@ -154,7 +154,7 @@ export declare namespace IWormhole {
     module: string,
     action: bigint,
     chain: bigint,
-    messageFee: bigint
+    messageFee: bigint,
   ] & { module: string; action: bigint; chain: bigint; messageFee: bigint };
 
   export type TransferFeesStruct = {
@@ -170,7 +170,7 @@ export declare namespace IWormhole {
     action: bigint,
     chain: bigint,
     amount: bigint,
-    recipient: string
+    recipient: string,
   ] & {
     module: string;
     action: bigint;
@@ -211,218 +211,218 @@ export interface IWormholeInterface extends Interface {
       | "submitSetMessageFee"
       | "submitTransferFees"
       | "verifySignatures"
-      | "verifyVM"
+      | "verifyVM",
   ): FunctionFragment;
 
   getEvent(
     nameOrSignatureOrTopic:
       | "ContractUpgraded"
       | "GuardianSetAdded"
-      | "LogMessagePublished"
+      | "LogMessagePublished",
   ): EventFragment;
 
   encodeFunctionData(functionFragment: "chainId", values?: undefined): string;
   encodeFunctionData(
     functionFragment: "evmChainId",
-    values?: undefined
+    values?: undefined,
   ): string;
   encodeFunctionData(
     functionFragment: "getCurrentGuardianSetIndex",
-    values?: undefined
+    values?: undefined,
   ): string;
   encodeFunctionData(
     functionFragment: "getGuardianSet",
-    values: [BigNumberish]
+    values: [BigNumberish],
   ): string;
   encodeFunctionData(
     functionFragment: "getGuardianSetExpiry",
-    values?: undefined
+    values?: undefined,
   ): string;
   encodeFunctionData(
     functionFragment: "governanceActionIsConsumed",
-    values: [BytesLike]
+    values: [BytesLike],
   ): string;
   encodeFunctionData(
     functionFragment: "governanceChainId",
-    values?: undefined
+    values?: undefined,
   ): string;
   encodeFunctionData(
     functionFragment: "governanceContract",
-    values?: undefined
+    values?: undefined,
   ): string;
   encodeFunctionData(
     functionFragment: "initialize",
-    values?: undefined
+    values?: undefined,
   ): string;
   encodeFunctionData(functionFragment: "isFork", values?: undefined): string;
   encodeFunctionData(
     functionFragment: "isInitialized",
-    values: [AddressLike]
+    values: [AddressLike],
   ): string;
   encodeFunctionData(
     functionFragment: "messageFee",
-    values?: undefined
+    values?: undefined,
   ): string;
   encodeFunctionData(
     functionFragment: "nextSequence",
-    values: [AddressLike]
+    values: [AddressLike],
   ): string;
   encodeFunctionData(
     functionFragment: "parseAndVerifyVM",
-    values: [BytesLike]
+    values: [BytesLike],
   ): string;
   encodeFunctionData(
     functionFragment: "parseContractUpgrade",
-    values: [BytesLike]
+    values: [BytesLike],
   ): string;
   encodeFunctionData(
     functionFragment: "parseGuardianSetUpgrade",
-    values: [BytesLike]
+    values: [BytesLike],
   ): string;
   encodeFunctionData(
     functionFragment: "parseRecoverChainId",
-    values: [BytesLike]
+    values: [BytesLike],
   ): string;
   encodeFunctionData(
     functionFragment: "parseSetMessageFee",
-    values: [BytesLike]
+    values: [BytesLike],
   ): string;
   encodeFunctionData(
     functionFragment: "parseTransferFees",
-    values: [BytesLike]
+    values: [BytesLike],
   ): string;
   encodeFunctionData(functionFragment: "parseVM", values: [BytesLike]): string;
   encodeFunctionData(
     functionFragment: "publishMessage",
-    values: [BigNumberish, BytesLike, BigNumberish]
+    values: [BigNumberish, BytesLike, BigNumberish],
   ): string;
   encodeFunctionData(
     functionFragment: "quorum",
-    values: [BigNumberish]
+    values: [BigNumberish],
   ): string;
   encodeFunctionData(
     functionFragment: "submitContractUpgrade",
-    values: [BytesLike]
+    values: [BytesLike],
   ): string;
   encodeFunctionData(
     functionFragment: "submitNewGuardianSet",
-    values: [BytesLike]
+    values: [BytesLike],
   ): string;
   encodeFunctionData(
     functionFragment: "submitRecoverChainId",
-    values: [BytesLike]
+    values: [BytesLike],
   ): string;
   encodeFunctionData(
     functionFragment: "submitSetMessageFee",
-    values: [BytesLike]
+    values: [BytesLike],
   ): string;
   encodeFunctionData(
     functionFragment: "submitTransferFees",
-    values: [BytesLike]
+    values: [BytesLike],
   ): string;
   encodeFunctionData(
     functionFragment: "verifySignatures",
     values: [
       BytesLike,
       IWormhole.SignatureStruct[],
-      IWormhole.GuardianSetStruct
-    ]
+      IWormhole.GuardianSetStruct,
+    ],
   ): string;
   encodeFunctionData(
     functionFragment: "verifyVM",
-    values: [IWormhole.VMStruct]
+    values: [IWormhole.VMStruct],
   ): string;
 
   decodeFunctionResult(functionFragment: "chainId", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "evmChainId", data: BytesLike): Result;
   decodeFunctionResult(
     functionFragment: "getCurrentGuardianSetIndex",
-    data: BytesLike
+    data: BytesLike,
   ): Result;
   decodeFunctionResult(
     functionFragment: "getGuardianSet",
-    data: BytesLike
+    data: BytesLike,
   ): Result;
   decodeFunctionResult(
     functionFragment: "getGuardianSetExpiry",
-    data: BytesLike
+    data: BytesLike,
   ): Result;
   decodeFunctionResult(
     functionFragment: "governanceActionIsConsumed",
-    data: BytesLike
+    data: BytesLike,
   ): Result;
   decodeFunctionResult(
     functionFragment: "governanceChainId",
-    data: BytesLike
+    data: BytesLike,
   ): Result;
   decodeFunctionResult(
     functionFragment: "governanceContract",
-    data: BytesLike
+    data: BytesLike,
   ): Result;
   decodeFunctionResult(functionFragment: "initialize", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "isFork", data: BytesLike): Result;
   decodeFunctionResult(
     functionFragment: "isInitialized",
-    data: BytesLike
+    data: BytesLike,
   ): Result;
   decodeFunctionResult(functionFragment: "messageFee", data: BytesLike): Result;
   decodeFunctionResult(
     functionFragment: "nextSequence",
-    data: BytesLike
+    data: BytesLike,
   ): Result;
   decodeFunctionResult(
     functionFragment: "parseAndVerifyVM",
-    data: BytesLike
+    data: BytesLike,
   ): Result;
   decodeFunctionResult(
     functionFragment: "parseContractUpgrade",
-    data: BytesLike
+    data: BytesLike,
   ): Result;
   decodeFunctionResult(
     functionFragment: "parseGuardianSetUpgrade",
-    data: BytesLike
+    data: BytesLike,
   ): Result;
   decodeFunctionResult(
     functionFragment: "parseRecoverChainId",
-    data: BytesLike
+    data: BytesLike,
   ): Result;
   decodeFunctionResult(
     functionFragment: "parseSetMessageFee",
-    data: BytesLike
+    data: BytesLike,
   ): Result;
   decodeFunctionResult(
     functionFragment: "parseTransferFees",
-    data: BytesLike
+    data: BytesLike,
   ): Result;
   decodeFunctionResult(functionFragment: "parseVM", data: BytesLike): Result;
   decodeFunctionResult(
     functionFragment: "publishMessage",
-    data: BytesLike
+    data: BytesLike,
   ): Result;
   decodeFunctionResult(functionFragment: "quorum", data: BytesLike): Result;
   decodeFunctionResult(
     functionFragment: "submitContractUpgrade",
-    data: BytesLike
+    data: BytesLike,
   ): Result;
   decodeFunctionResult(
     functionFragment: "submitNewGuardianSet",
-    data: BytesLike
+    data: BytesLike,
   ): Result;
   decodeFunctionResult(
     functionFragment: "submitRecoverChainId",
-    data: BytesLike
+    data: BytesLike,
   ): Result;
   decodeFunctionResult(
     functionFragment: "submitSetMessageFee",
-    data: BytesLike
+    data: BytesLike,
   ): Result;
   decodeFunctionResult(
     functionFragment: "submitTransferFees",
-    data: BytesLike
+    data: BytesLike,
   ): Result;
   decodeFunctionResult(
     functionFragment: "verifySignatures",
-    data: BytesLike
+    data: BytesLike,
   ): Result;
   decodeFunctionResult(functionFragment: "verifyVM", data: BytesLike): Result;
 }
@@ -458,14 +458,14 @@ export namespace LogMessagePublishedEvent {
     sequence: BigNumberish,
     nonce: BigNumberish,
     payload: BytesLike,
-    consistencyLevel: BigNumberish
+    consistencyLevel: BigNumberish,
   ];
   export type OutputTuple = [
     sender: string,
     sequence: bigint,
     nonce: bigint,
     payload: string,
-    consistencyLevel: bigint
+    consistencyLevel: bigint,
   ];
   export interface OutputObject {
     sender: string;
@@ -489,38 +489,38 @@ export interface IWormhole extends BaseContract {
   queryFilter<TCEvent extends TypedContractEvent>(
     event: TCEvent,
     fromBlockOrBlockhash?: string | number | undefined,
-    toBlock?: string | number | undefined
+    toBlock?: string | number | undefined,
   ): Promise<Array<TypedEventLog<TCEvent>>>;
   queryFilter<TCEvent extends TypedContractEvent>(
     filter: TypedDeferredTopicFilter<TCEvent>,
     fromBlockOrBlockhash?: string | number | undefined,
-    toBlock?: string | number | undefined
+    toBlock?: string | number | undefined,
   ): Promise<Array<TypedEventLog<TCEvent>>>;
 
   on<TCEvent extends TypedContractEvent>(
     event: TCEvent,
-    listener: TypedListener<TCEvent>
+    listener: TypedListener<TCEvent>,
   ): Promise<this>;
   on<TCEvent extends TypedContractEvent>(
     filter: TypedDeferredTopicFilter<TCEvent>,
-    listener: TypedListener<TCEvent>
+    listener: TypedListener<TCEvent>,
   ): Promise<this>;
 
   once<TCEvent extends TypedContractEvent>(
     event: TCEvent,
-    listener: TypedListener<TCEvent>
+    listener: TypedListener<TCEvent>,
   ): Promise<this>;
   once<TCEvent extends TypedContractEvent>(
     filter: TypedDeferredTopicFilter<TCEvent>,
-    listener: TypedListener<TCEvent>
+    listener: TypedListener<TCEvent>,
   ): Promise<this>;
 
   listeners<TCEvent extends TypedContractEvent>(
-    event: TCEvent
+    event: TCEvent,
   ): Promise<Array<TypedListener<TCEvent>>>;
   listeners(eventName?: string): Promise<Array<Listener>>;
   removeAllListeners<TCEvent extends TypedContractEvent>(
-    event?: TCEvent
+    event?: TCEvent,
   ): Promise<this>;
 
   chainId: TypedContractMethod<[], [bigint], "view">;
@@ -564,7 +564,7 @@ export interface IWormhole extends BaseContract {
         vm: IWormhole.VMStructOutput;
         valid: boolean;
         reason: string;
-      }
+      },
     ],
     "view"
   >;
@@ -647,7 +647,7 @@ export interface IWormhole extends BaseContract {
     [
       hash: BytesLike,
       signatures: IWormhole.SignatureStruct[],
-      guardianSet: IWormhole.GuardianSetStruct
+      guardianSet: IWormhole.GuardianSetStruct,
     ],
     [[boolean, string] & { valid: boolean; reason: string }],
     "view"
@@ -660,145 +660,143 @@ export interface IWormhole extends BaseContract {
   >;
 
   getFunction<T extends ContractMethod = ContractMethod>(
-    key: string | FunctionFragment
+    key: string | FunctionFragment,
   ): T;
 
   getFunction(
-    nameOrSignature: "chainId"
+    nameOrSignature: "chainId",
   ): TypedContractMethod<[], [bigint], "view">;
   getFunction(
-    nameOrSignature: "evmChainId"
+    nameOrSignature: "evmChainId",
   ): TypedContractMethod<[], [bigint], "view">;
   getFunction(
-    nameOrSignature: "getCurrentGuardianSetIndex"
+    nameOrSignature: "getCurrentGuardianSetIndex",
   ): TypedContractMethod<[], [bigint], "view">;
   getFunction(
-    nameOrSignature: "getGuardianSet"
+    nameOrSignature: "getGuardianSet",
   ): TypedContractMethod<
     [index: BigNumberish],
     [IWormhole.GuardianSetStructOutput],
     "view"
   >;
   getFunction(
-    nameOrSignature: "getGuardianSetExpiry"
+    nameOrSignature: "getGuardianSetExpiry",
   ): TypedContractMethod<[], [bigint], "view">;
   getFunction(
-    nameOrSignature: "governanceActionIsConsumed"
+    nameOrSignature: "governanceActionIsConsumed",
   ): TypedContractMethod<[hash: BytesLike], [boolean], "view">;
   getFunction(
-    nameOrSignature: "governanceChainId"
+    nameOrSignature: "governanceChainId",
   ): TypedContractMethod<[], [bigint], "view">;
   getFunction(
-    nameOrSignature: "governanceContract"
+    nameOrSignature: "governanceContract",
   ): TypedContractMethod<[], [string], "view">;
   getFunction(
-    nameOrSignature: "initialize"
+    nameOrSignature: "initialize",
   ): TypedContractMethod<[], [void], "nonpayable">;
   getFunction(
-    nameOrSignature: "isFork"
+    nameOrSignature: "isFork",
   ): TypedContractMethod<[], [boolean], "view">;
   getFunction(
-    nameOrSignature: "isInitialized"
+    nameOrSignature: "isInitialized",
   ): TypedContractMethod<[impl: AddressLike], [boolean], "view">;
   getFunction(
-    nameOrSignature: "messageFee"
+    nameOrSignature: "messageFee",
   ): TypedContractMethod<[], [bigint], "view">;
   getFunction(
-    nameOrSignature: "nextSequence"
+    nameOrSignature: "nextSequence",
   ): TypedContractMethod<[emitter: AddressLike], [bigint], "view">;
-  getFunction(
-    nameOrSignature: "parseAndVerifyVM"
-  ): TypedContractMethod<
+  getFunction(nameOrSignature: "parseAndVerifyVM"): TypedContractMethod<
     [encodedVM: BytesLike],
     [
       [IWormhole.VMStructOutput, boolean, string] & {
         vm: IWormhole.VMStructOutput;
         valid: boolean;
         reason: string;
-      }
+      },
     ],
     "view"
   >;
   getFunction(
-    nameOrSignature: "parseContractUpgrade"
+    nameOrSignature: "parseContractUpgrade",
   ): TypedContractMethod<
     [encodedUpgrade: BytesLike],
     [IWormhole.ContractUpgradeStructOutput],
     "view"
   >;
   getFunction(
-    nameOrSignature: "parseGuardianSetUpgrade"
+    nameOrSignature: "parseGuardianSetUpgrade",
   ): TypedContractMethod<
     [encodedUpgrade: BytesLike],
     [IWormhole.GuardianSetUpgradeStructOutput],
     "view"
   >;
   getFunction(
-    nameOrSignature: "parseRecoverChainId"
+    nameOrSignature: "parseRecoverChainId",
   ): TypedContractMethod<
     [encodedRecoverChainId: BytesLike],
     [IWormhole.RecoverChainIdStructOutput],
     "view"
   >;
   getFunction(
-    nameOrSignature: "parseSetMessageFee"
+    nameOrSignature: "parseSetMessageFee",
   ): TypedContractMethod<
     [encodedSetMessageFee: BytesLike],
     [IWormhole.SetMessageFeeStructOutput],
     "view"
   >;
   getFunction(
-    nameOrSignature: "parseTransferFees"
+    nameOrSignature: "parseTransferFees",
   ): TypedContractMethod<
     [encodedTransferFees: BytesLike],
     [IWormhole.TransferFeesStructOutput],
     "view"
   >;
   getFunction(
-    nameOrSignature: "parseVM"
+    nameOrSignature: "parseVM",
   ): TypedContractMethod<
     [encodedVM: BytesLike],
     [IWormhole.VMStructOutput],
     "view"
   >;
   getFunction(
-    nameOrSignature: "publishMessage"
+    nameOrSignature: "publishMessage",
   ): TypedContractMethod<
     [nonce: BigNumberish, payload: BytesLike, consistencyLevel: BigNumberish],
     [bigint],
     "payable"
   >;
   getFunction(
-    nameOrSignature: "quorum"
+    nameOrSignature: "quorum",
   ): TypedContractMethod<[numGuardians: BigNumberish], [bigint], "view">;
   getFunction(
-    nameOrSignature: "submitContractUpgrade"
+    nameOrSignature: "submitContractUpgrade",
   ): TypedContractMethod<[_vm: BytesLike], [void], "nonpayable">;
   getFunction(
-    nameOrSignature: "submitNewGuardianSet"
+    nameOrSignature: "submitNewGuardianSet",
   ): TypedContractMethod<[_vm: BytesLike], [void], "nonpayable">;
   getFunction(
-    nameOrSignature: "submitRecoverChainId"
+    nameOrSignature: "submitRecoverChainId",
   ): TypedContractMethod<[_vm: BytesLike], [void], "nonpayable">;
   getFunction(
-    nameOrSignature: "submitSetMessageFee"
+    nameOrSignature: "submitSetMessageFee",
   ): TypedContractMethod<[_vm: BytesLike], [void], "nonpayable">;
   getFunction(
-    nameOrSignature: "submitTransferFees"
+    nameOrSignature: "submitTransferFees",
   ): TypedContractMethod<[_vm: BytesLike], [void], "nonpayable">;
   getFunction(
-    nameOrSignature: "verifySignatures"
+    nameOrSignature: "verifySignatures",
   ): TypedContractMethod<
     [
       hash: BytesLike,
       signatures: IWormhole.SignatureStruct[],
-      guardianSet: IWormhole.GuardianSetStruct
+      guardianSet: IWormhole.GuardianSetStruct,
     ],
     [[boolean, string] & { valid: boolean; reason: string }],
     "view"
   >;
   getFunction(
-    nameOrSignature: "verifyVM"
+    nameOrSignature: "verifyVM",
   ): TypedContractMethod<
     [vm: IWormhole.VMStruct],
     [[boolean, string] & { valid: boolean; reason: string }],
@@ -806,21 +804,21 @@ export interface IWormhole extends BaseContract {
   >;
 
   getEvent(
-    key: "ContractUpgraded"
+    key: "ContractUpgraded",
   ): TypedContractEvent<
     ContractUpgradedEvent.InputTuple,
     ContractUpgradedEvent.OutputTuple,
     ContractUpgradedEvent.OutputObject
   >;
   getEvent(
-    key: "GuardianSetAdded"
+    key: "GuardianSetAdded",
   ): TypedContractEvent<
     GuardianSetAddedEvent.InputTuple,
     GuardianSetAddedEvent.OutputTuple,
     GuardianSetAddedEvent.OutputObject
   >;
   getEvent(
-    key: "LogMessagePublished"
+    key: "LogMessagePublished",
   ): TypedContractEvent<
     LogMessagePublishedEvent.InputTuple,
     LogMessagePublishedEvent.OutputTuple,

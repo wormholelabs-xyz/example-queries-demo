@@ -65,7 +65,7 @@ type BytesParsingConstructorParams =
   | ConstructorParameters<typeof ContractFactory>;
 
 const isSuperArgs = (
-  xs: BytesParsingConstructorParams
+  xs: BytesParsingConstructorParams,
 ): xs is ConstructorParameters<typeof ContractFactory> => xs.length > 1;
 
 export class BytesParsing__factory extends ContractFactory {
@@ -78,7 +78,7 @@ export class BytesParsing__factory extends ContractFactory {
   }
 
   override getDeployTransaction(
-    overrides?: NonPayableOverrides & { from?: string }
+    overrides?: NonPayableOverrides & { from?: string },
   ): Promise<ContractDeployTransaction> {
     return super.getDeployTransaction(overrides || {});
   }
@@ -100,7 +100,7 @@ export class BytesParsing__factory extends ContractFactory {
   }
   static connect(
     address: string,
-    runner?: ContractRunner | null
+    runner?: ContractRunner | null,
   ): BytesParsing {
     return new Contract(address, _abi, runner) as unknown as BytesParsing;
   }

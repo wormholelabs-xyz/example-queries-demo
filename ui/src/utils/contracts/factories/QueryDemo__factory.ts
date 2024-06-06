@@ -1253,7 +1253,7 @@ type QueryDemoConstructorParams =
   | ConstructorParameters<typeof ContractFactory>;
 
 const isSuperArgs = (
-  xs: QueryDemoConstructorParams
+  xs: QueryDemoConstructorParams,
 ): xs is ConstructorParameters<typeof ContractFactory> => xs.length > 1;
 
 export class QueryDemo__factory extends ContractFactory {
@@ -1269,26 +1269,26 @@ export class QueryDemo__factory extends ContractFactory {
     _owner: AddressLike,
     _wormhole: AddressLike,
     _myChainID: BigNumberish,
-    overrides?: NonPayableOverrides & { from?: string }
+    overrides?: NonPayableOverrides & { from?: string },
   ): Promise<ContractDeployTransaction> {
     return super.getDeployTransaction(
       _owner,
       _wormhole,
       _myChainID,
-      overrides || {}
+      overrides || {},
     );
   }
   override deploy(
     _owner: AddressLike,
     _wormhole: AddressLike,
     _myChainID: BigNumberish,
-    overrides?: NonPayableOverrides & { from?: string }
+    overrides?: NonPayableOverrides & { from?: string },
   ) {
     return super.deploy(
       _owner,
       _wormhole,
       _myChainID,
-      overrides || {}
+      overrides || {},
     ) as Promise<
       QueryDemo & {
         deploymentTransaction(): ContractTransactionResponse;

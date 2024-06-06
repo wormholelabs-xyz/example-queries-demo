@@ -10,16 +10,17 @@ import {
   Link,
   Typography,
 } from "@mui/material";
-import axios from "axios";
-import { Buffer } from "buffer";
-import { useSnackbar } from "notistack";
-import { useCallback, useEffect, useMemo, useState } from "react";
-import { eth } from "web3";
 import {
   EthCallQueryRequest,
   PerChainQueryRequest,
   QueryRequest,
 } from "@wormhole-foundation/wormhole-query-sdk";
+import axios from "axios";
+import { Buffer } from "buffer";
+import { ethers } from "ethers";
+import { useSnackbar } from "notistack";
+import { useCallback, useEffect, useMemo, useState } from "react";
+import { eth } from "web3";
 import {
   CHAIN_ID_ARBITRUM_SEPOLIA,
   CHAIN_ID_BASE_SEPOLIA,
@@ -31,7 +32,6 @@ import { QueryDemo__factory } from "./utils/contracts";
 import { QueryDemo } from "./utils/contracts/QueryDemo";
 import { METAMASK_CHAIN_PARAMETERS } from "./utils/metaMaskChainParameters";
 import { sleep } from "./utils/sleep";
-import { ethers } from "ethers";
 
 type QueryResponse = {
   signatures: string[];
@@ -77,7 +77,7 @@ const QUERY_URL = "https://testnet.query.wormhole.com/v1/query";
 const decodeState = (bytes: string): QueryDemo.ChainEntryStructOutput[] =>
   QueryDemo__factory.createInterface().decodeFunctionResult(
     "getState",
-    bytes
+    bytes,
   )[0];
 
 function ContractState({
@@ -92,7 +92,7 @@ function ContractState({
       state
         ? [...decodeState(state)].sort((a, b) => Number(a.chainID - b.chainID))
         : [],
-    [state]
+    [state],
   );
   if (!state) return null;
   return (
@@ -166,8 +166,8 @@ export default function CCQ() {
                     params: [{ to: address, data: GET_STATE_CALL }, "latest"],
                   },
                 ])
-              : Promise.reject()
-          )
+              : Promise.reject(),
+          ),
         );
         if (cancelled) return;
         setOnChainInfo(
@@ -179,7 +179,7 @@ export default function CCQ() {
               return { blockNumber, blockTime, contractState };
             }
             return null;
-          })
+          }),
         );
       } catch (e) {
         console.error("Failed to read on-chain state.");
@@ -201,7 +201,7 @@ export default function CCQ() {
         enqueueSnackbar("Metamask not found", { variant: "error" });
       }
       const contractEntry = CONTRACTS.find(
-        ({ chainId }) => chainId.toString() === event.target.dataset.chainId
+        ({ chainId }) => chainId.toString() === event.target.dataset.chainId,
       );
       const address = contractEntry?.address;
       const requiredEvmChainId = contractEntry?.evmId;
@@ -216,7 +216,7 @@ export default function CCQ() {
           const provider = new ethers.BrowserProvider(
             // @ts-ignore
             window.ethereum,
-            "any"
+            "any",
           );
           console.log("info at request time", onChainInfo);
           const perChainRequests = CONTRACTS.map(
@@ -225,11 +225,12 @@ export default function CCQ() {
                 chainId,
                 new EthCallQueryRequest(onChainInfo[idx]?.blockNumber || "", [
                   { to: address, data: GET_MY_COUNTER_CALL },
-                ])
-              )
+                ]),
+              ),
           ).filter(
             (_, idx) =>
-              CONTRACTS[idx].chainId.toString() !== event.target.dataset.chainId
+              CONTRACTS[idx].chainId.toString() !==
+              event.target.dataset.chainId,
           );
           const nonce = 1;
           const request = new QueryRequest(nonce, perChainRequests);
@@ -249,14 +250,14 @@ export default function CCQ() {
               bytes: Buffer.from(serialized).toString("hex"),
             },
             // { headers: { "X-API-Key": signatureRequiredApiKey } }
-            { headers: { "X-API-Key": signatureNotRequiredApiKey } }
+            { headers: { "X-API-Key": signatureNotRequiredApiKey } },
           );
           const afterTime = performance.now();
           enqueueSnackbar(
             `Response received in ${(afterTime - beforeTime).toFixed(2)}ms`,
             {
               variant: "info",
-            }
+            },
           );
           const connectedChainId = (await provider.getNetwork()).chainId;
           if (connectedChainId !== BigInt(requiredEvmChainId)) {
@@ -287,7 +288,7 @@ export default function CCQ() {
           }
           const contract = QueryDemo__factory.connect(
             address,
-            await provider.getSigner()
+            await provider.getSigner(),
           );
           console.log(
             `0x${response.data.bytes}`,
@@ -297,8 +298,8 @@ export default function CCQ() {
                 `0x${s.substring(64, 128)}`,
                 `0x${(parseInt(s.substring(128, 130), 16) + 27).toString(16)}`,
                 `0x${s.substring(130, 132)}`,
-              ])
-            )
+              ]),
+            ),
           );
           const tx = await contract.updateCounters(
             `0x${response.data.bytes}`,
@@ -307,7 +308,7 @@ export default function CCQ() {
               s: `0x${s.substring(64, 128)}`,
               v: `0x${(parseInt(s.substring(128, 130), 16) + 27).toString(16)}`,
               guardianIndex: `0x${s.substring(130, 132)}`,
-            }))
+            })),
           );
           enqueueSnackbar(`Transaction submitted: ${tx.hash}`, {
             variant: "info",
@@ -346,7 +347,7 @@ export default function CCQ() {
             "Transaction confirmed, successfully updated counters!",
             {
               variant: "success",
-            }
+            },
           );
         } catch (e: any) {
           enqueueSnackbar(e?.innerError?.message || e?.message, {
@@ -357,7 +358,7 @@ export default function CCQ() {
         setIsWorking(false);
       })();
     },
-    [enqueueSnackbar, onChainInfo]
+    [enqueueSnackbar, onChainInfo],
   );
   return (
     <Grid container spacing={2}>
@@ -373,15 +374,15 @@ export default function CCQ() {
                     <Typography variant="body2">
                       {parseInt(
                         (onChainInfo[idx]?.blockNumber || "0x00").substring(2),
-                        16
+                        16,
                       )}
                     </Typography>
                     <Typography variant="body2">
                       {new Date(
                         parseInt(
                           (onChainInfo[idx]?.blockTime || "0x00").substring(2),
-                          16
-                        ) * 1000
+                          16,
+                        ) * 1000,
                       ).toLocaleString()}
                     </Typography>
                     <Typography variant="h6" sx={{ mt: 2 }}>
@@ -422,7 +423,7 @@ export default function CCQ() {
               </CardContent>
             </Card>
           </Grid>
-        )
+        ),
       )}
     </Grid>
   );

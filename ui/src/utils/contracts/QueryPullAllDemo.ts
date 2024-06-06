@@ -34,7 +34,7 @@ export type ParsedPerChainQueryResponseStructOutput = [
   chainId: bigint,
   queryType: bigint,
   request: string,
-  response: string
+  response: string,
 ] & { chainId: bigint; queryType: bigint; request: string; response: string };
 
 export type ParsedQueryResponseStruct = {
@@ -50,7 +50,7 @@ export type ParsedQueryResponseStructOutput = [
   senderChainId: bigint,
   nonce: bigint,
   requestId: string,
-  responses: ParsedPerChainQueryResponseStructOutput[]
+  responses: ParsedPerChainQueryResponseStructOutput[],
 ] & {
   version: bigint;
   senderChainId: bigint;
@@ -68,7 +68,7 @@ export type EthCallDataStruct = {
 export type EthCallDataStructOutput = [
   contractAddress: string,
   callData: string,
-  result: string
+  result: string,
 ] & { contractAddress: string; callData: string; result: string };
 
 export type EthCallByTimestampQueryResponseStruct = {
@@ -94,7 +94,7 @@ export type EthCallByTimestampQueryResponseStructOutput = [
   targetBlockHash: string,
   followingBlockHash: string,
   followingBlockTime: bigint,
-  result: EthCallDataStructOutput[]
+  result: EthCallDataStructOutput[],
 ] & {
   requestTargetBlockIdHint: string;
   requestFollowingBlockIdHint: string;
@@ -121,7 +121,7 @@ export type EthCallQueryResponseStructOutput = [
   blockNum: bigint,
   blockTime: bigint,
   blockHash: string,
-  result: EthCallDataStructOutput[]
+  result: EthCallDataStructOutput[],
 ] & {
   requestBlockId: string;
   blockNum: bigint;
@@ -145,7 +145,7 @@ export type EthCallWithFinalityQueryResponseStructOutput = [
   blockNum: bigint,
   blockTime: bigint,
   blockHash: string,
-  result: EthCallDataStructOutput[]
+  result: EthCallDataStructOutput[],
 ] & {
   requestBlockId: string;
   requestFinality: string;
@@ -170,7 +170,7 @@ export type SolanaAccountResultStructOutput = [
   rentEpoch: bigint,
   executable: boolean,
   owner: string,
-  data: string
+  data: string,
 ] & {
   account: string;
   lamports: bigint;
@@ -199,7 +199,7 @@ export type SolanaAccountQueryResponseStructOutput = [
   slotNumber: bigint,
   blockTime: bigint,
   blockHash: string,
-  results: SolanaAccountResultStructOutput[]
+  results: SolanaAccountResultStructOutput[],
 ] & {
   requestCommitment: string;
   requestMinContextSlot: bigint;
@@ -232,7 +232,7 @@ export type SolanaPdaResultStructOutput = [
   executable: boolean,
   owner: string,
   data: string,
-  bump: bigint
+  bump: bigint,
 ] & {
   programId: string;
   seeds: string[];
@@ -264,7 +264,7 @@ export type SolanaPdaQueryResponseStructOutput = [
   slotNumber: bigint,
   blockTime: bigint,
   blockHash: string,
-  results: SolanaPdaResultStructOutput[]
+  results: SolanaPdaResultStructOutput[],
 ] & {
   requestCommitment: string;
   requestMinContextSlot: bigint;
@@ -286,7 +286,7 @@ export declare namespace QueryPullAllDemo {
   export type MessageStructOutput = [
     payloadID: bigint,
     destinationChainID: bigint,
-    message: string
+    message: string,
   ] & { payloadID: bigint; destinationChainID: bigint; message: string };
 }
 
@@ -302,7 +302,7 @@ export declare namespace IWormhole {
     r: string,
     s: string,
     v: bigint,
-    guardianIndex: bigint
+    guardianIndex: bigint,
   ] & { r: string; s: string; v: bigint; guardianIndex: bigint };
 }
 
@@ -339,239 +339,239 @@ export interface QueryPullAllDemoInterface extends Interface {
       | "validateEthCallData"
       | "validateMultipleEthCallData"
       | "verifyQueryResponseSignatures"
-      | "wormhole"
+      | "wormhole",
   ): FunctionFragment;
 
   getEvent(
-    nameOrSignatureOrTopic: "pullMessagePublished" | "pullMessageReceived"
+    nameOrSignatureOrTopic: "pullMessagePublished" | "pullMessageReceived",
   ): EventFragment;
 
   encodeFunctionData(
     functionFragment: "QT_ETH_CALL",
-    values?: undefined
+    values?: undefined,
   ): string;
   encodeFunctionData(
     functionFragment: "QT_ETH_CALL_BY_TIMESTAMP",
-    values?: undefined
+    values?: undefined,
   ): string;
   encodeFunctionData(
     functionFragment: "QT_ETH_CALL_WITH_FINALITY",
-    values?: undefined
+    values?: undefined,
   ): string;
   encodeFunctionData(functionFragment: "QT_MAX", values?: undefined): string;
   encodeFunctionData(
     functionFragment: "QT_SOL_ACCOUNT",
-    values?: undefined
+    values?: undefined,
   ): string;
   encodeFunctionData(
     functionFragment: "QT_SOL_PDA",
-    values?: undefined
+    values?: undefined,
   ): string;
   encodeFunctionData(functionFragment: "VERSION", values?: undefined): string;
   encodeFunctionData(
     functionFragment: "chainRegistrations",
-    values: [BigNumberish]
+    values: [BigNumberish],
   ): string;
   encodeFunctionData(
     functionFragment: "decodeMessage",
-    values: [BytesLike]
+    values: [BytesLike],
   ): string;
   encodeFunctionData(
     functionFragment: "encodeMessage",
-    values: [QueryPullAllDemo.MessageStruct]
+    values: [QueryPullAllDemo.MessageStruct],
   ): string;
   encodeFunctionData(
     functionFragment: "getResponseDigest",
-    values: [BytesLike]
+    values: [BytesLike],
   ): string;
   encodeFunctionData(
     functionFragment: "getResponseHash",
-    values: [BytesLike]
+    values: [BytesLike],
   ): string;
   encodeFunctionData(
     functionFragment: "lastReceivedMessage",
-    values: [BigNumberish]
+    values: [BigNumberish],
   ): string;
   encodeFunctionData(
     functionFragment: "latestSentMessage",
-    values: [BigNumberish]
+    values: [BigNumberish],
   ): string;
   encodeFunctionData(
     functionFragment: "parseAndVerifyQueryResponse",
-    values: [BytesLike, IWormhole.SignatureStruct[]]
+    values: [BytesLike, IWormhole.SignatureStruct[]],
   ): string;
   encodeFunctionData(
     functionFragment: "parseEthCallByTimestampQueryResponse",
-    values: [ParsedPerChainQueryResponseStruct]
+    values: [ParsedPerChainQueryResponseStruct],
   ): string;
   encodeFunctionData(
     functionFragment: "parseEthCallQueryResponse",
-    values: [ParsedPerChainQueryResponseStruct]
+    values: [ParsedPerChainQueryResponseStruct],
   ): string;
   encodeFunctionData(
     functionFragment: "parseEthCallWithFinalityQueryResponse",
-    values: [ParsedPerChainQueryResponseStruct]
+    values: [ParsedPerChainQueryResponseStruct],
   ): string;
   encodeFunctionData(
     functionFragment: "parseSolanaAccountQueryResponse",
-    values: [ParsedPerChainQueryResponseStruct]
+    values: [ParsedPerChainQueryResponseStruct],
   ): string;
   encodeFunctionData(
     functionFragment: "parseSolanaPdaQueryResponse",
-    values: [ParsedPerChainQueryResponseStruct]
+    values: [ParsedPerChainQueryResponseStruct],
   ): string;
   encodeFunctionData(
     functionFragment: "receivePullMessages",
-    values: [BytesLike, IWormhole.SignatureStruct[], BytesLike[]]
+    values: [BytesLike, IWormhole.SignatureStruct[], BytesLike[]],
   ): string;
   encodeFunctionData(
     functionFragment: "responsePrefix",
-    values?: undefined
+    values?: undefined,
   ): string;
   encodeFunctionData(
     functionFragment: "sendPullMessage",
-    values: [BigNumberish, string]
+    values: [BigNumberish, string],
   ): string;
   encodeFunctionData(
     functionFragment: "updateRegistration",
-    values: [BigNumberish, BytesLike]
+    values: [BigNumberish, BytesLike],
   ): string;
   encodeFunctionData(
     functionFragment: "validateBlockNum",
-    values: [BigNumberish, BigNumberish]
+    values: [BigNumberish, BigNumberish],
   ): string;
   encodeFunctionData(
     functionFragment: "validateBlockTime",
-    values: [BigNumberish, BigNumberish]
+    values: [BigNumberish, BigNumberish],
   ): string;
   encodeFunctionData(
     functionFragment: "validateChainId",
-    values: [BigNumberish, BigNumberish[]]
+    values: [BigNumberish, BigNumberish[]],
   ): string;
   encodeFunctionData(
     functionFragment: "validateEthCallData",
-    values: [EthCallDataStruct, AddressLike[], BytesLike[]]
+    values: [EthCallDataStruct, AddressLike[], BytesLike[]],
   ): string;
   encodeFunctionData(
     functionFragment: "validateMultipleEthCallData",
-    values: [EthCallDataStruct[], AddressLike[], BytesLike[]]
+    values: [EthCallDataStruct[], AddressLike[], BytesLike[]],
   ): string;
   encodeFunctionData(
     functionFragment: "verifyQueryResponseSignatures",
-    values: [BytesLike, IWormhole.SignatureStruct[]]
+    values: [BytesLike, IWormhole.SignatureStruct[]],
   ): string;
   encodeFunctionData(functionFragment: "wormhole", values?: undefined): string;
 
   decodeFunctionResult(
     functionFragment: "QT_ETH_CALL",
-    data: BytesLike
+    data: BytesLike,
   ): Result;
   decodeFunctionResult(
     functionFragment: "QT_ETH_CALL_BY_TIMESTAMP",
-    data: BytesLike
+    data: BytesLike,
   ): Result;
   decodeFunctionResult(
     functionFragment: "QT_ETH_CALL_WITH_FINALITY",
-    data: BytesLike
+    data: BytesLike,
   ): Result;
   decodeFunctionResult(functionFragment: "QT_MAX", data: BytesLike): Result;
   decodeFunctionResult(
     functionFragment: "QT_SOL_ACCOUNT",
-    data: BytesLike
+    data: BytesLike,
   ): Result;
   decodeFunctionResult(functionFragment: "QT_SOL_PDA", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "VERSION", data: BytesLike): Result;
   decodeFunctionResult(
     functionFragment: "chainRegistrations",
-    data: BytesLike
+    data: BytesLike,
   ): Result;
   decodeFunctionResult(
     functionFragment: "decodeMessage",
-    data: BytesLike
+    data: BytesLike,
   ): Result;
   decodeFunctionResult(
     functionFragment: "encodeMessage",
-    data: BytesLike
+    data: BytesLike,
   ): Result;
   decodeFunctionResult(
     functionFragment: "getResponseDigest",
-    data: BytesLike
+    data: BytesLike,
   ): Result;
   decodeFunctionResult(
     functionFragment: "getResponseHash",
-    data: BytesLike
+    data: BytesLike,
   ): Result;
   decodeFunctionResult(
     functionFragment: "lastReceivedMessage",
-    data: BytesLike
+    data: BytesLike,
   ): Result;
   decodeFunctionResult(
     functionFragment: "latestSentMessage",
-    data: BytesLike
+    data: BytesLike,
   ): Result;
   decodeFunctionResult(
     functionFragment: "parseAndVerifyQueryResponse",
-    data: BytesLike
+    data: BytesLike,
   ): Result;
   decodeFunctionResult(
     functionFragment: "parseEthCallByTimestampQueryResponse",
-    data: BytesLike
+    data: BytesLike,
   ): Result;
   decodeFunctionResult(
     functionFragment: "parseEthCallQueryResponse",
-    data: BytesLike
+    data: BytesLike,
   ): Result;
   decodeFunctionResult(
     functionFragment: "parseEthCallWithFinalityQueryResponse",
-    data: BytesLike
+    data: BytesLike,
   ): Result;
   decodeFunctionResult(
     functionFragment: "parseSolanaAccountQueryResponse",
-    data: BytesLike
+    data: BytesLike,
   ): Result;
   decodeFunctionResult(
     functionFragment: "parseSolanaPdaQueryResponse",
-    data: BytesLike
+    data: BytesLike,
   ): Result;
   decodeFunctionResult(
     functionFragment: "receivePullMessages",
-    data: BytesLike
+    data: BytesLike,
   ): Result;
   decodeFunctionResult(
     functionFragment: "responsePrefix",
-    data: BytesLike
+    data: BytesLike,
   ): Result;
   decodeFunctionResult(
     functionFragment: "sendPullMessage",
-    data: BytesLike
+    data: BytesLike,
   ): Result;
   decodeFunctionResult(
     functionFragment: "updateRegistration",
-    data: BytesLike
+    data: BytesLike,
   ): Result;
   decodeFunctionResult(
     functionFragment: "validateBlockNum",
-    data: BytesLike
+    data: BytesLike,
   ): Result;
   decodeFunctionResult(
     functionFragment: "validateBlockTime",
-    data: BytesLike
+    data: BytesLike,
   ): Result;
   decodeFunctionResult(
     functionFragment: "validateChainId",
-    data: BytesLike
+    data: BytesLike,
   ): Result;
   decodeFunctionResult(
     functionFragment: "validateEthCallData",
-    data: BytesLike
+    data: BytesLike,
   ): Result;
   decodeFunctionResult(
     functionFragment: "validateMultipleEthCallData",
-    data: BytesLike
+    data: BytesLike,
   ): Result;
   decodeFunctionResult(
     functionFragment: "verifyQueryResponseSignatures",
-    data: BytesLike
+    data: BytesLike,
   ): Result;
   decodeFunctionResult(functionFragment: "wormhole", data: BytesLike): Result;
 }
@@ -583,7 +583,7 @@ export namespace pullMessagePublishedEvent {
     sourceChainID: BigNumberish,
     payloadID: BigNumberish,
     destinationChainID: BigNumberish,
-    message: string
+    message: string,
   ];
   export type OutputTuple = [
     previousHash: string,
@@ -591,7 +591,7 @@ export namespace pullMessagePublishedEvent {
     sourceChainID: bigint,
     payloadID: bigint,
     destinationChainID: bigint,
-    message: string
+    message: string,
   ];
   export interface OutputObject {
     previousHash: string;
@@ -614,7 +614,7 @@ export namespace pullMessageReceivedEvent {
     sourceChainID: BigNumberish,
     payloadID: BigNumberish,
     destinationChainID: BigNumberish,
-    message: string
+    message: string,
   ];
   export type OutputTuple = [
     previousHash: string,
@@ -622,7 +622,7 @@ export namespace pullMessageReceivedEvent {
     sourceChainID: bigint,
     payloadID: bigint,
     destinationChainID: bigint,
-    message: string
+    message: string,
   ];
   export interface OutputObject {
     previousHash: string;
@@ -647,38 +647,38 @@ export interface QueryPullAllDemo extends BaseContract {
   queryFilter<TCEvent extends TypedContractEvent>(
     event: TCEvent,
     fromBlockOrBlockhash?: string | number | undefined,
-    toBlock?: string | number | undefined
+    toBlock?: string | number | undefined,
   ): Promise<Array<TypedEventLog<TCEvent>>>;
   queryFilter<TCEvent extends TypedContractEvent>(
     filter: TypedDeferredTopicFilter<TCEvent>,
     fromBlockOrBlockhash?: string | number | undefined,
-    toBlock?: string | number | undefined
+    toBlock?: string | number | undefined,
   ): Promise<Array<TypedEventLog<TCEvent>>>;
 
   on<TCEvent extends TypedContractEvent>(
     event: TCEvent,
-    listener: TypedListener<TCEvent>
+    listener: TypedListener<TCEvent>,
   ): Promise<this>;
   on<TCEvent extends TypedContractEvent>(
     filter: TypedDeferredTopicFilter<TCEvent>,
-    listener: TypedListener<TCEvent>
+    listener: TypedListener<TCEvent>,
   ): Promise<this>;
 
   once<TCEvent extends TypedContractEvent>(
     event: TCEvent,
-    listener: TypedListener<TCEvent>
+    listener: TypedListener<TCEvent>,
   ): Promise<this>;
   once<TCEvent extends TypedContractEvent>(
     filter: TypedDeferredTopicFilter<TCEvent>,
-    listener: TypedListener<TCEvent>
+    listener: TypedListener<TCEvent>,
   ): Promise<this>;
 
   listeners<TCEvent extends TypedContractEvent>(
-    event: TCEvent
+    event: TCEvent,
   ): Promise<Array<TypedListener<TCEvent>>>;
   listeners(eventName?: string): Promise<Array<Listener>>;
   removeAllListeners<TCEvent extends TypedContractEvent>(
-    event?: TCEvent
+    event?: TCEvent,
   ): Promise<this>;
 
   QT_ETH_CALL: TypedContractMethod<[], [bigint], "view">;
@@ -773,7 +773,7 @@ export interface QueryPullAllDemo extends BaseContract {
     [
       response: BytesLike,
       signatures: IWormhole.SignatureStruct[],
-      messages: BytesLike[]
+      messages: BytesLike[],
     ],
     [void],
     "nonpayable"
@@ -815,7 +815,7 @@ export interface QueryPullAllDemo extends BaseContract {
     [
       r: EthCallDataStruct,
       _expectedContractAddresses: AddressLike[],
-      _expectedFunctionSignatures: BytesLike[]
+      _expectedFunctionSignatures: BytesLike[],
     ],
     [void],
     "view"
@@ -825,7 +825,7 @@ export interface QueryPullAllDemo extends BaseContract {
     [
       r: EthCallDataStruct[],
       _expectedContractAddresses: AddressLike[],
-      _expectedFunctionSignatures: BytesLike[]
+      _expectedFunctionSignatures: BytesLike[],
     ],
     [void],
     "view"
@@ -840,192 +840,192 @@ export interface QueryPullAllDemo extends BaseContract {
   wormhole: TypedContractMethod<[], [string], "view">;
 
   getFunction<T extends ContractMethod = ContractMethod>(
-    key: string | FunctionFragment
+    key: string | FunctionFragment,
   ): T;
 
   getFunction(
-    nameOrSignature: "QT_ETH_CALL"
+    nameOrSignature: "QT_ETH_CALL",
   ): TypedContractMethod<[], [bigint], "view">;
   getFunction(
-    nameOrSignature: "QT_ETH_CALL_BY_TIMESTAMP"
+    nameOrSignature: "QT_ETH_CALL_BY_TIMESTAMP",
   ): TypedContractMethod<[], [bigint], "view">;
   getFunction(
-    nameOrSignature: "QT_ETH_CALL_WITH_FINALITY"
+    nameOrSignature: "QT_ETH_CALL_WITH_FINALITY",
   ): TypedContractMethod<[], [bigint], "view">;
   getFunction(
-    nameOrSignature: "QT_MAX"
+    nameOrSignature: "QT_MAX",
   ): TypedContractMethod<[], [bigint], "view">;
   getFunction(
-    nameOrSignature: "QT_SOL_ACCOUNT"
+    nameOrSignature: "QT_SOL_ACCOUNT",
   ): TypedContractMethod<[], [bigint], "view">;
   getFunction(
-    nameOrSignature: "QT_SOL_PDA"
+    nameOrSignature: "QT_SOL_PDA",
   ): TypedContractMethod<[], [bigint], "view">;
   getFunction(
-    nameOrSignature: "VERSION"
+    nameOrSignature: "VERSION",
   ): TypedContractMethod<[], [bigint], "view">;
   getFunction(
-    nameOrSignature: "chainRegistrations"
+    nameOrSignature: "chainRegistrations",
   ): TypedContractMethod<[arg0: BigNumberish], [string], "view">;
   getFunction(
-    nameOrSignature: "decodeMessage"
+    nameOrSignature: "decodeMessage",
   ): TypedContractMethod<
     [encodedMessage: BytesLike],
     [QueryPullAllDemo.MessageStructOutput],
     "view"
   >;
   getFunction(
-    nameOrSignature: "encodeMessage"
+    nameOrSignature: "encodeMessage",
   ): TypedContractMethod<
     [parsedMessage: QueryPullAllDemo.MessageStruct],
     [string],
     "view"
   >;
   getFunction(
-    nameOrSignature: "getResponseDigest"
+    nameOrSignature: "getResponseDigest",
   ): TypedContractMethod<[response: BytesLike], [string], "view">;
   getFunction(
-    nameOrSignature: "getResponseHash"
+    nameOrSignature: "getResponseHash",
   ): TypedContractMethod<[response: BytesLike], [string], "view">;
   getFunction(
-    nameOrSignature: "lastReceivedMessage"
+    nameOrSignature: "lastReceivedMessage",
   ): TypedContractMethod<[_sourceChainId: BigNumberish], [string], "view">;
   getFunction(
-    nameOrSignature: "latestSentMessage"
+    nameOrSignature: "latestSentMessage",
   ): TypedContractMethod<[_destinationChainID: BigNumberish], [string], "view">;
   getFunction(
-    nameOrSignature: "parseAndVerifyQueryResponse"
+    nameOrSignature: "parseAndVerifyQueryResponse",
   ): TypedContractMethod<
     [response: BytesLike, signatures: IWormhole.SignatureStruct[]],
     [ParsedQueryResponseStructOutput],
     "view"
   >;
   getFunction(
-    nameOrSignature: "parseEthCallByTimestampQueryResponse"
+    nameOrSignature: "parseEthCallByTimestampQueryResponse",
   ): TypedContractMethod<
     [pcr: ParsedPerChainQueryResponseStruct],
     [EthCallByTimestampQueryResponseStructOutput],
     "view"
   >;
   getFunction(
-    nameOrSignature: "parseEthCallQueryResponse"
+    nameOrSignature: "parseEthCallQueryResponse",
   ): TypedContractMethod<
     [pcr: ParsedPerChainQueryResponseStruct],
     [EthCallQueryResponseStructOutput],
     "view"
   >;
   getFunction(
-    nameOrSignature: "parseEthCallWithFinalityQueryResponse"
+    nameOrSignature: "parseEthCallWithFinalityQueryResponse",
   ): TypedContractMethod<
     [pcr: ParsedPerChainQueryResponseStruct],
     [EthCallWithFinalityQueryResponseStructOutput],
     "view"
   >;
   getFunction(
-    nameOrSignature: "parseSolanaAccountQueryResponse"
+    nameOrSignature: "parseSolanaAccountQueryResponse",
   ): TypedContractMethod<
     [pcr: ParsedPerChainQueryResponseStruct],
     [SolanaAccountQueryResponseStructOutput],
     "view"
   >;
   getFunction(
-    nameOrSignature: "parseSolanaPdaQueryResponse"
+    nameOrSignature: "parseSolanaPdaQueryResponse",
   ): TypedContractMethod<
     [pcr: ParsedPerChainQueryResponseStruct],
     [SolanaPdaQueryResponseStructOutput],
     "view"
   >;
   getFunction(
-    nameOrSignature: "receivePullMessages"
+    nameOrSignature: "receivePullMessages",
   ): TypedContractMethod<
     [
       response: BytesLike,
       signatures: IWormhole.SignatureStruct[],
-      messages: BytesLike[]
+      messages: BytesLike[],
     ],
     [void],
     "nonpayable"
   >;
   getFunction(
-    nameOrSignature: "responsePrefix"
+    nameOrSignature: "responsePrefix",
   ): TypedContractMethod<[], [string], "view">;
   getFunction(
-    nameOrSignature: "sendPullMessage"
+    nameOrSignature: "sendPullMessage",
   ): TypedContractMethod<
     [_destinationChainID: BigNumberish, _message: string],
     [string],
     "nonpayable"
   >;
   getFunction(
-    nameOrSignature: "updateRegistration"
+    nameOrSignature: "updateRegistration",
   ): TypedContractMethod<
     [_chainID: BigNumberish, _contractAddress: BytesLike],
     [void],
     "nonpayable"
   >;
   getFunction(
-    nameOrSignature: "validateBlockNum"
+    nameOrSignature: "validateBlockNum",
   ): TypedContractMethod<
     [_blockNum: BigNumberish, _minBlockNum: BigNumberish],
     [void],
     "view"
   >;
   getFunction(
-    nameOrSignature: "validateBlockTime"
+    nameOrSignature: "validateBlockTime",
   ): TypedContractMethod<
     [_blockTime: BigNumberish, _minBlockTime: BigNumberish],
     [void],
     "view"
   >;
   getFunction(
-    nameOrSignature: "validateChainId"
+    nameOrSignature: "validateChainId",
   ): TypedContractMethod<
     [chainId: BigNumberish, _validChainIds: BigNumberish[]],
     [void],
     "view"
   >;
   getFunction(
-    nameOrSignature: "validateEthCallData"
+    nameOrSignature: "validateEthCallData",
   ): TypedContractMethod<
     [
       r: EthCallDataStruct,
       _expectedContractAddresses: AddressLike[],
-      _expectedFunctionSignatures: BytesLike[]
+      _expectedFunctionSignatures: BytesLike[],
     ],
     [void],
     "view"
   >;
   getFunction(
-    nameOrSignature: "validateMultipleEthCallData"
+    nameOrSignature: "validateMultipleEthCallData",
   ): TypedContractMethod<
     [
       r: EthCallDataStruct[],
       _expectedContractAddresses: AddressLike[],
-      _expectedFunctionSignatures: BytesLike[]
+      _expectedFunctionSignatures: BytesLike[],
     ],
     [void],
     "view"
   >;
   getFunction(
-    nameOrSignature: "verifyQueryResponseSignatures"
+    nameOrSignature: "verifyQueryResponseSignatures",
   ): TypedContractMethod<
     [response: BytesLike, signatures: IWormhole.SignatureStruct[]],
     [void],
     "view"
   >;
   getFunction(
-    nameOrSignature: "wormhole"
+    nameOrSignature: "wormhole",
   ): TypedContractMethod<[], [string], "view">;
 
   getEvent(
-    key: "pullMessagePublished"
+    key: "pullMessagePublished",
   ): TypedContractEvent<
     pullMessagePublishedEvent.InputTuple,
     pullMessagePublishedEvent.OutputTuple,
     pullMessagePublishedEvent.OutputObject
   >;
   getEvent(
-    key: "pullMessageReceived"
+    key: "pullMessageReceived",
   ): TypedContractEvent<
     pullMessageReceivedEvent.InputTuple,
     pullMessageReceivedEvent.OutputTuple,
