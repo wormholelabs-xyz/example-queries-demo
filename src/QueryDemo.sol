@@ -11,7 +11,6 @@ error InvalidOwner();
 // @dev for the onlyOwner modifier
 error InvalidCaller();
 error InvalidCalldata();
-error InvalidWormholeAddress();
 error InvalidForeignChainID();
 error ObsoleteUpdate();
 error StaleUpdate();
@@ -42,10 +41,6 @@ contract QueryDemo is QueryResponse {
             revert InvalidOwner();
         }
         owner = _owner;
-
-        if (_wormhole == address(0)) {
-            revert InvalidWormholeAddress();
-        }
 
         myChainID = _myChainID;
         counters[_myChainID] = ChainEntry(_myChainID, address(this), 0, 0, 0);
