@@ -32,8 +32,12 @@ contract QueryPushPullDemo is QueryResponse {
     }
 
     event pullMessagePublished(uint8 payloadID, uint64 sequence, uint16 destinationChainID, string message);
-    event pullMessageReceived(uint16 sourceChainID, uint8 payloadID, uint64 sequence, uint16 destinationChainID, string message);
-    event pushMessageReceived(uint16 sourceChainID, uint8 payloadID, uint64 sequence, uint16 destinationChainID, string message);
+    event pullMessageReceived(
+        uint16 sourceChainID, uint8 payloadID, uint64 sequence, uint16 destinationChainID, string message
+    );
+    event pushMessageReceived(
+        uint16 sourceChainID, uint8 payloadID, uint64 sequence, uint16 destinationChainID, string message
+    );
 
     address private immutable owner;
     uint16 private immutable myChainID;
@@ -50,7 +54,7 @@ contract QueryPushPullDemo is QueryResponse {
             revert InvalidOwner();
         }
         owner = _owner;
-        
+
         myChainID = _myChainID;
     }
 
@@ -113,12 +117,13 @@ contract QueryPushPullDemo is QueryResponse {
         require(index == encodedMessage.length, "invalid message length");
     }
 
-    function sendPushMessage(uint16 _destinationChainID, string memory _message) public payable returns (uint64 _sequence) {
+    function sendPushMessage(uint16 _destinationChainID, string memory _message)
+        public
+        payable
+        returns (uint64 _sequence)
+    {
         // enforce a max size for the arbitrary message
-        require(
-            abi.encodePacked(_message).length < type(uint16).max,
-            "message too large"
-        );
+        require(abi.encodePacked(_message).length < type(uint16).max, "message too large");
 
         IWormhole _wormhole = IWormhole(wormhole);
         uint256 wormholeFee = _wormhole.messageFee();
@@ -126,12 +131,8 @@ contract QueryPushPullDemo is QueryResponse {
         // Confirm that the caller has sent enough value to pay for the Wormhole message fee.
         require(msg.value == wormholeFee, "insufficient value");
 
-        Message memory parsedMessage = Message({
-            payloadID: uint8(1),
-            sequence: 0,
-            destinationChainID: _destinationChainID,
-            message: _message
-        });
+        Message memory parsedMessage =
+            Message({payloadID: uint8(1), sequence: 0, destinationChainID: _destinationChainID, message: _message});
 
         // encode the Message struct into bytes
         bytes memory encodedMessage = encodeMessage(parsedMessage);
@@ -147,10 +148,7 @@ contract QueryPushPullDemo is QueryResponse {
 
     function sendPullMessage(uint16 _destinationChainID, string memory _message) public returns (uint64 _sequence) {
         // enforce a max size for the arbitrary message
-        require(
-            abi.encodePacked(_message).length < type(uint16).max,
-            "message too large"
-        );
+        require(abi.encodePacked(_message).length < type(uint16).max, "message too large");
 
         _sequence = ++sequence;
 
@@ -165,11 +163,14 @@ contract QueryPushPullDemo is QueryResponse {
         bytes memory encodedMessage = encodeMessage(parsedMessage);
 
         // for consistency, match the inbound digest calculation
-        bytes32 digest = keccak256(abi.encodePacked(myChainID, bytes32(uint256(uint160(address(this)))), keccak256(encodedMessage)));
+        bytes32 digest =
+            keccak256(abi.encodePacked(myChainID, bytes32(uint256(uint160(address(this)))), keccak256(encodedMessage)));
 
         ccqSent[digest] = true;
 
-        emit pullMessagePublished(parsedMessage.payloadID, parsedMessage.sequence, parsedMessage.destinationChainID, parsedMessage.message);
+        emit pullMessagePublished(
+            parsedMessage.payloadID, parsedMessage.sequence, parsedMessage.destinationChainID, parsedMessage.message
+        );
     }
 
     // hasSentMessage (call signature 8b9369e2) returns true if the given digest matches a message sent by this conract. It is meant to be used in a cross chain query.
@@ -187,11 +188,8 @@ contract QueryPushPullDemo is QueryResponse {
 
     function receivePushMessage(bytes memory encodedMessage) public {
         // call the Wormhole core contract to parse and verify the encodedMessage
-        (
-            IWormhole.VM memory wormholeMessage,
-            bool valid,
-            string memory reason
-        ) = IWormhole(wormhole).parseAndVerifyVM(encodedMessage);
+        (IWormhole.VM memory wormholeMessage, bool valid, string memory reason) =
+            IWormhole(wormhole).parseAndVerifyVM(encodedMessage);
 
         // confirm that the Wormhole core contract verified the message
         require(valid, reason);
@@ -212,24 +210,32 @@ contract QueryPushPullDemo is QueryResponse {
         coreReceived[wormholeMessage.hash] = true;
 
         // decode the message payload into the Message struct
-        Message memory parsedMessage = decodeMessage(
-            wormholeMessage.payload
-        );
+        Message memory parsedMessage = decodeMessage(wormholeMessage.payload);
 
         if (parsedMessage.destinationChainID != myChainID) {
             revert InvalidDestinationChain();
         }
 
-        emit pushMessageReceived(wormholeMessage.emitterChainId, parsedMessage.payloadID, wormholeMessage.sequence, parsedMessage.destinationChainID, parsedMessage.message);
+        emit pushMessageReceived(
+            wormholeMessage.emitterChainId,
+            parsedMessage.payloadID,
+            wormholeMessage.sequence,
+            parsedMessage.destinationChainID,
+            parsedMessage.message
+        );
     }
 
     // @notice Takes the cross chain query response for any number of "safe" messages from registered contracts, stores the digest for replay protection, and "processes" (logs) the message.
-    function receivePullMessages(bytes memory response, IWormhole.Signature[] memory signatures, bytes[] memory messages) public {
+    function receivePullMessages(
+        bytes memory response,
+        IWormhole.Signature[] memory signatures,
+        bytes[] memory messages
+    ) public {
         ParsedQueryResponse memory r = parseAndVerifyQueryResponse(response, signatures);
-        uint numResponses = r.responses.length;
-        uint messageIndex = 0;
-        
-        for (uint i=0; i < numResponses;) {
+        uint256 numResponses = r.responses.length;
+        uint256 messageIndex = 0;
+
+        for (uint256 i = 0; i < numResponses;) {
             uint16 requestChainID = r.responses[i].chainId;
             address foreignContract = _truncateAddress(chainRegistrations[requestChainID]);
             if (foreignContract == address(0)) {
@@ -242,18 +248,21 @@ contract QueryPushPullDemo is QueryResponse {
                 revert InvalidFinality();
             }
 
-            uint numCalls = eqr.result.length;
-            for (uint resultIdx=0; resultIdx < numCalls;) {
-
+            uint256 numCalls = eqr.result.length;
+            for (uint256 resultIdx = 0; resultIdx < numCalls;) {
                 if (eqr.result[resultIdx].contractAddress != foreignContract) {
                     revert InvalidContractAddress();
                 }
 
                 // add the chain id and contract to form a unique digest
-                bytes32 digest = keccak256(abi.encodePacked(requestChainID, chainRegistrations[requestChainID], keccak256(messages[messageIndex])));
+                bytes32 digest = keccak256(
+                    abi.encodePacked(
+                        requestChainID, chainRegistrations[requestChainID], keccak256(messages[messageIndex])
+                    )
+                );
 
                 if (ccqReceived[digest]) {
-                    // This could also just skip 
+                    // This could also just skip
                     revert AlreadyReceived(digest);
                 }
 
@@ -266,7 +275,10 @@ contract QueryPushPullDemo is QueryResponse {
                 // }
 
                 // this works
-                if (keccak256(eqr.result[resultIdx].callData) != keccak256(abi.encodeWithSelector(HasSentMessage, digest))) {
+                if (
+                    keccak256(eqr.result[resultIdx].callData)
+                        != keccak256(abi.encodeWithSelector(HasSentMessage, digest))
+                ) {
                     revert UnexpectedCallData();
                 }
 
@@ -277,15 +289,19 @@ contract QueryPushPullDemo is QueryResponse {
 
                 ccqReceived[digest] = true;
 
-                Message memory parsedMessage = decodeMessage(
-                    messages[messageIndex]
-                );
+                Message memory parsedMessage = decodeMessage(messages[messageIndex]);
 
                 if (parsedMessage.destinationChainID != myChainID) {
                     revert InvalidDestinationChain();
                 }
 
-                emit pullMessageReceived(requestChainID, parsedMessage.payloadID, parsedMessage.sequence, parsedMessage.destinationChainID, parsedMessage.message);
+                emit pullMessageReceived(
+                    requestChainID,
+                    parsedMessage.payloadID,
+                    parsedMessage.sequence,
+                    parsedMessage.destinationChainID,
+                    parsedMessage.message
+                );
 
                 unchecked {
                     ++resultIdx;
