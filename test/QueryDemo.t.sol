@@ -12,4 +12,8 @@ contract QueryDemoTest is Test {
         WormholeMock wormholeMock = new WormholeMock();
         demo = new QueryDemo(address(this), address(wormholeMock), 2);
     }
+
+    function test_getMyCounter() public view {
+        assertEq(demo.getMyCounter(), 0);
+    }
 }
