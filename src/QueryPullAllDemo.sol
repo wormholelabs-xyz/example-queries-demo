@@ -37,8 +37,22 @@ contract QueryPullAllDemo is QueryResponse {
         string message;
     }
 
-    event pullMessagePublished(bytes32 previousHash, bytes32 latestHash, uint16 sourceChainID, uint8 payloadID, uint16 destinationChainID, string message);
-    event pullMessageReceived(bytes32 previousHash, bytes32 latestHash, uint16 sourceChainID, uint8 payloadID, uint16 destinationChainID, string message);
+    event pullMessagePublished(
+        bytes32 previousHash,
+        bytes32 latestHash,
+        uint16 sourceChainID,
+        uint8 payloadID,
+        uint16 destinationChainID,
+        string message
+    );
+    event pullMessageReceived(
+        bytes32 previousHash,
+        bytes32 latestHash,
+        uint16 sourceChainID,
+        uint8 payloadID,
+        uint16 destinationChainID,
+        string message
+    );
 
     address private immutable owner;
     uint16 private immutable myChainID;
@@ -117,16 +131,10 @@ contract QueryPullAllDemo is QueryResponse {
 
     function sendPullMessage(uint16 _destinationChainID, string memory _message) public returns (bytes32) {
         // enforce a max size for the arbitrary message
-        require(
-            abi.encodePacked(_message).length < type(uint16).max,
-            "message too large"
-        );
+        require(abi.encodePacked(_message).length < type(uint16).max, "message too large");
 
-        Message memory parsedMessage = Message({
-            payloadID: uint8(1),
-            destinationChainID: _destinationChainID,
-            message: _message
-        });
+        Message memory parsedMessage =
+            Message({payloadID: uint8(1), destinationChainID: _destinationChainID, message: _message});
 
         // encode the Message struct into bytes
         bytes memory encodedMessage = encodeMessage(parsedMessage);
@@ -134,7 +142,14 @@ contract QueryPullAllDemo is QueryResponse {
         bytes32 _previousHash = latestSentTo[_destinationChainID];
         latestSentTo[_destinationChainID] = keccak256(abi.encodePacked(_previousHash, keccak256(encodedMessage)));
 
-        emit pullMessagePublished(_previousHash, latestSentTo[_destinationChainID], myChainID, parsedMessage.payloadID, parsedMessage.destinationChainID, parsedMessage.message);
+        emit pullMessagePublished(
+            _previousHash,
+            latestSentTo[_destinationChainID],
+            myChainID,
+            parsedMessage.payloadID,
+            parsedMessage.destinationChainID,
+            parsedMessage.message
+        );
 
         return latestSentTo[_destinationChainID];
     }
@@ -148,18 +163,22 @@ contract QueryPullAllDemo is QueryResponse {
         return latestReceivedFrom[_sourceChainId];
     }
 
-    // @notice Takes the cross chain query response for any number of "finalized" messages from registered contracts, 
-    // "processes" (logs) the message, 
+    // @notice Takes the cross chain query response for any number of "finalized" messages from registered contracts,
+    // "processes" (logs) the message,
     // and ensures that the resulting hash(previousHash, digest) matches the query
     // This expects one response per chain, and the messages to be grouped in order of chain
     // Hashing the messages for a chain from lastReceivedMessage[_sourceChainId] should result in <sourceChain's> latestSentTo[_destinationChainID]
-    function receivePullMessages(bytes memory response, IWormhole.Signature[] memory signatures, bytes[] memory messages) public {
+    function receivePullMessages(
+        bytes memory response,
+        IWormhole.Signature[] memory signatures,
+        bytes[] memory messages
+    ) public {
         ParsedQueryResponse memory r = parseAndVerifyQueryResponse(response, signatures);
-        uint numResponses = r.responses.length;
-        uint numMessages = messages.length;
-        uint messageIndex = 0;
-        
-        for (uint i=0; i < numResponses;) {
+        uint256 numResponses = r.responses.length;
+        uint256 numMessages = messages.length;
+        uint256 messageIndex = 0;
+
+        for (uint256 i = 0; i < numResponses;) {
             uint16 requestChainID = r.responses[i].chainId;
             address foreignContract = _truncateAddress(chainRegistrations[requestChainID]);
             if (foreignContract == address(0)) {
@@ -193,19 +212,23 @@ contract QueryPullAllDemo is QueryResponse {
             bytes32 _previousHash = latestReceivedFrom[requestChainID];
 
             while (messageIndex < numMessages && _previousHash != _targetHash) {
-
                 bytes32 _newHash = keccak256(abi.encodePacked(_previousHash, keccak256(messages[messageIndex])));
 
                 // avoid stack too deep
                 {
-                    Message memory parsedMessage = decodeMessage(
-                        messages[messageIndex]
-                    );
+                    Message memory parsedMessage = decodeMessage(messages[messageIndex]);
 
                     if (parsedMessage.destinationChainID != myChainID) {
                         revert InvalidDestinationChain();
                     }
-                    emit pullMessageReceived(_previousHash, _newHash, requestChainID, parsedMessage.payloadID, parsedMessage.destinationChainID, parsedMessage.message);
+                    emit pullMessageReceived(
+                        _previousHash,
+                        _newHash,
+                        requestChainID,
+                        parsedMessage.payloadID,
+                        parsedMessage.destinationChainID,
+                        parsedMessage.message
+                    );
                 }
 
                 _previousHash = _newHash;
