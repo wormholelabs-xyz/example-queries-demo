@@ -8,6 +8,7 @@ import type {
   FunctionFragment,
   Result,
   Interface,
+  EventFragment,
   AddressLike,
   ContractRunner,
   ContractMethod,
@@ -17,6 +18,7 @@ import type {
   TypedContractEvent,
   TypedDeferredTopicFilter,
   TypedEventLog,
+  TypedLogDescription,
   TypedListener,
   TypedContractMethod,
 } from "./common";
@@ -274,27 +276,24 @@ export type SolanaPdaQueryResponseStructOutput = [
   results: SolanaPdaResultStructOutput[];
 };
 
-export declare namespace QueryDemo {
-  export type ChainEntryStruct = {
-    chainID: BigNumberish;
-    contractAddress: AddressLike;
-    counter: BigNumberish;
-    blockNum: BigNumberish;
-    blockTime: BigNumberish;
+export declare namespace QueryPushPullDemo {
+  export type MessageStruct = {
+    payloadID: BigNumberish;
+    sequence: BigNumberish;
+    destinationChainID: BigNumberish;
+    message: string;
   };
 
-  export type ChainEntryStructOutput = [
-    chainID: bigint,
-    contractAddress: string,
-    counter: bigint,
-    blockNum: bigint,
-    blockTime: bigint
+  export type MessageStructOutput = [
+    payloadID: bigint,
+    sequence: bigint,
+    destinationChainID: bigint,
+    message: string
   ] & {
-    chainID: bigint;
-    contractAddress: string;
-    counter: bigint;
-    blockNum: bigint;
-    blockTime: bigint;
+    payloadID: bigint;
+    sequence: bigint;
+    destinationChainID: bigint;
+    message: string;
   };
 }
 
@@ -314,7 +313,7 @@ export declare namespace IWormhole {
   ] & { r: string; s: string; v: bigint; guardianIndex: bigint };
 }
 
-export interface QueryDemoInterface extends Interface {
+export interface QueryPushPullDemoInterface extends Interface {
   getFunction(
     nameOrSignature:
       | "QT_ETH_CALL"
@@ -324,18 +323,25 @@ export interface QueryDemoInterface extends Interface {
       | "QT_SOL_ACCOUNT"
       | "QT_SOL_PDA"
       | "VERSION"
-      | "getMyCounter"
+      | "decodeMessage"
+      | "encodeMessage"
       | "getResponseDigest"
       | "getResponseHash"
-      | "getState"
+      | "hasReceivedMessage"
+      | "hasReceivedPushMessage"
+      | "hasSentMessage"
       | "parseAndVerifyQueryResponse"
       | "parseEthCallByTimestampQueryResponse"
       | "parseEthCallQueryResponse"
       | "parseEthCallWithFinalityQueryResponse"
       | "parseSolanaAccountQueryResponse"
       | "parseSolanaPdaQueryResponse"
+      | "receivePullMessages"
+      | "receivePushMessage"
       | "responsePrefix"
-      | "updateCounters"
+      | "sendPullMessage"
+      | "sendPushMessage"
+      | "sequence"
       | "updateRegistration"
       | "validateBlockNum"
       | "validateBlockTime"
@@ -345,6 +351,13 @@ export interface QueryDemoInterface extends Interface {
       | "verifyQueryResponseSignatures"
       | "wormhole"
   ): FunctionFragment;
+
+  getEvent(
+    nameOrSignatureOrTopic:
+      | "pullMessagePublished"
+      | "pullMessageReceived"
+      | "pushMessageReceived"
+  ): EventFragment;
 
   encodeFunctionData(
     functionFragment: "QT_ETH_CALL",
@@ -369,8 +382,12 @@ export interface QueryDemoInterface extends Interface {
   ): string;
   encodeFunctionData(functionFragment: "VERSION", values?: undefined): string;
   encodeFunctionData(
-    functionFragment: "getMyCounter",
-    values?: undefined
+    functionFragment: "decodeMessage",
+    values: [BytesLike]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "encodeMessage",
+    values: [QueryPushPullDemo.MessageStruct]
   ): string;
   encodeFunctionData(
     functionFragment: "getResponseDigest",
@@ -380,7 +397,18 @@ export interface QueryDemoInterface extends Interface {
     functionFragment: "getResponseHash",
     values: [BytesLike]
   ): string;
-  encodeFunctionData(functionFragment: "getState", values?: undefined): string;
+  encodeFunctionData(
+    functionFragment: "hasReceivedMessage",
+    values: [BytesLike]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "hasReceivedPushMessage",
+    values: [BytesLike]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "hasSentMessage",
+    values: [BytesLike]
+  ): string;
   encodeFunctionData(
     functionFragment: "parseAndVerifyQueryResponse",
     values: [BytesLike, IWormhole.SignatureStruct[]]
@@ -406,16 +434,29 @@ export interface QueryDemoInterface extends Interface {
     values: [ParsedPerChainQueryResponseStruct]
   ): string;
   encodeFunctionData(
+    functionFragment: "receivePullMessages",
+    values: [BytesLike, IWormhole.SignatureStruct[], BytesLike[]]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "receivePushMessage",
+    values: [BytesLike]
+  ): string;
+  encodeFunctionData(
     functionFragment: "responsePrefix",
     values?: undefined
   ): string;
   encodeFunctionData(
-    functionFragment: "updateCounters",
-    values: [BytesLike, IWormhole.SignatureStruct[]]
+    functionFragment: "sendPullMessage",
+    values: [BigNumberish, string]
   ): string;
   encodeFunctionData(
+    functionFragment: "sendPushMessage",
+    values: [BigNumberish, string]
+  ): string;
+  encodeFunctionData(functionFragment: "sequence", values?: undefined): string;
+  encodeFunctionData(
     functionFragment: "updateRegistration",
-    values: [BigNumberish, AddressLike]
+    values: [BigNumberish, BytesLike]
   ): string;
   encodeFunctionData(
     functionFragment: "validateBlockNum",
@@ -463,7 +504,11 @@ export interface QueryDemoInterface extends Interface {
   decodeFunctionResult(functionFragment: "QT_SOL_PDA", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "VERSION", data: BytesLike): Result;
   decodeFunctionResult(
-    functionFragment: "getMyCounter",
+    functionFragment: "decodeMessage",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "encodeMessage",
     data: BytesLike
   ): Result;
   decodeFunctionResult(
@@ -474,7 +519,18 @@ export interface QueryDemoInterface extends Interface {
     functionFragment: "getResponseHash",
     data: BytesLike
   ): Result;
-  decodeFunctionResult(functionFragment: "getState", data: BytesLike): Result;
+  decodeFunctionResult(
+    functionFragment: "hasReceivedMessage",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "hasReceivedPushMessage",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "hasSentMessage",
+    data: BytesLike
+  ): Result;
   decodeFunctionResult(
     functionFragment: "parseAndVerifyQueryResponse",
     data: BytesLike
@@ -500,13 +556,26 @@ export interface QueryDemoInterface extends Interface {
     data: BytesLike
   ): Result;
   decodeFunctionResult(
+    functionFragment: "receivePullMessages",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "receivePushMessage",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
     functionFragment: "responsePrefix",
     data: BytesLike
   ): Result;
   decodeFunctionResult(
-    functionFragment: "updateCounters",
+    functionFragment: "sendPullMessage",
     data: BytesLike
   ): Result;
+  decodeFunctionResult(
+    functionFragment: "sendPushMessage",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(functionFragment: "sequence", data: BytesLike): Result;
   decodeFunctionResult(
     functionFragment: "updateRegistration",
     data: BytesLike
@@ -538,11 +607,92 @@ export interface QueryDemoInterface extends Interface {
   decodeFunctionResult(functionFragment: "wormhole", data: BytesLike): Result;
 }
 
-export interface QueryDemo extends BaseContract {
-  connect(runner?: ContractRunner | null): QueryDemo;
+export namespace pullMessagePublishedEvent {
+  export type InputTuple = [
+    payloadID: BigNumberish,
+    sequence: BigNumberish,
+    destinationChainID: BigNumberish,
+    message: string
+  ];
+  export type OutputTuple = [
+    payloadID: bigint,
+    sequence: bigint,
+    destinationChainID: bigint,
+    message: string
+  ];
+  export interface OutputObject {
+    payloadID: bigint;
+    sequence: bigint;
+    destinationChainID: bigint;
+    message: string;
+  }
+  export type Event = TypedContractEvent<InputTuple, OutputTuple, OutputObject>;
+  export type Filter = TypedDeferredTopicFilter<Event>;
+  export type Log = TypedEventLog<Event>;
+  export type LogDescription = TypedLogDescription<Event>;
+}
+
+export namespace pullMessageReceivedEvent {
+  export type InputTuple = [
+    sourceChainID: BigNumberish,
+    payloadID: BigNumberish,
+    sequence: BigNumberish,
+    destinationChainID: BigNumberish,
+    message: string
+  ];
+  export type OutputTuple = [
+    sourceChainID: bigint,
+    payloadID: bigint,
+    sequence: bigint,
+    destinationChainID: bigint,
+    message: string
+  ];
+  export interface OutputObject {
+    sourceChainID: bigint;
+    payloadID: bigint;
+    sequence: bigint;
+    destinationChainID: bigint;
+    message: string;
+  }
+  export type Event = TypedContractEvent<InputTuple, OutputTuple, OutputObject>;
+  export type Filter = TypedDeferredTopicFilter<Event>;
+  export type Log = TypedEventLog<Event>;
+  export type LogDescription = TypedLogDescription<Event>;
+}
+
+export namespace pushMessageReceivedEvent {
+  export type InputTuple = [
+    sourceChainID: BigNumberish,
+    payloadID: BigNumberish,
+    sequence: BigNumberish,
+    destinationChainID: BigNumberish,
+    message: string
+  ];
+  export type OutputTuple = [
+    sourceChainID: bigint,
+    payloadID: bigint,
+    sequence: bigint,
+    destinationChainID: bigint,
+    message: string
+  ];
+  export interface OutputObject {
+    sourceChainID: bigint;
+    payloadID: bigint;
+    sequence: bigint;
+    destinationChainID: bigint;
+    message: string;
+  }
+  export type Event = TypedContractEvent<InputTuple, OutputTuple, OutputObject>;
+  export type Filter = TypedDeferredTopicFilter<Event>;
+  export type Log = TypedEventLog<Event>;
+  export type LogDescription = TypedLogDescription<Event>;
+}
+
+export interface QueryPushPullDemo extends BaseContract {
+  connect(runner?: ContractRunner | null): QueryPushPullDemo;
   waitForDeployment(): Promise<this>;
 
-  interface: QueryDemoInterface;
+  interface: QueryPushPullDemoInterface;
 
   queryFilter<TCEvent extends TypedContractEvent>(
     event: TCEvent,
@@ -595,7 +745,17 @@ export interface QueryDemo extends BaseContract {
 
   VERSION: TypedContractMethod<[], [bigint], "view">;
 
-  getMyCounter: TypedContractMethod<[], [bigint], "view">;
+  decodeMessage: TypedContractMethod<
+    [encodedMessage: BytesLike],
+    [QueryPushPullDemo.MessageStructOutput],
+    "view"
+  >;
+
+  encodeMessage: TypedContractMethod<
+    [parsedMessage: QueryPushPullDemo.MessageStruct],
+    [string],
+    "view"
+  >;
 
   getResponseDigest: TypedContractMethod<
     [response: BytesLike],
@@ -605,11 +765,19 @@ export interface QueryDemo extends BaseContract {
 
   getResponseHash: TypedContractMethod<[response: BytesLike], [string], "view">;
 
-  getState: TypedContractMethod<
-    [],
-    [QueryDemo.ChainEntryStructOutput[]],
+  hasReceivedMessage: TypedContractMethod<
+    [digest: BytesLike],
+    [boolean],
     "view"
   >;
+
+  hasReceivedPushMessage: TypedContractMethod<
+    [digest: BytesLike],
+    [boolean],
+    "view"
+  >;
+
+  hasSentMessage: TypedContractMethod<[digest: BytesLike], [boolean], "view">;
 
   parseAndVerifyQueryResponse: TypedContractMethod<
     [response: BytesLike, signatures: IWormhole.SignatureStruct[]],
@@ -647,16 +815,40 @@ export interface QueryDemo extends BaseContract {
     "view"
   >;
 
-  responsePrefix: TypedContractMethod<[], [string], "view">;
-
-  updateCounters: TypedContractMethod<
-    [response: BytesLike, signatures: IWormhole.SignatureStruct[]],
+  receivePullMessages: TypedContractMethod<
+    [
+      response: BytesLike,
+      signatures: IWormhole.SignatureStruct[],
+      messages: BytesLike[]
+    ],
     [void],
     "nonpayable"
   >;
 
+  receivePushMessage: TypedContractMethod<
+    [encodedMessage: BytesLike],
+    [void],
+    "nonpayable"
+  >;
+
+  responsePrefix: TypedContractMethod<[], [string], "view">;
+
+  sendPullMessage: TypedContractMethod<
+    [_destinationChainID: BigNumberish, _message: string],
+    [bigint],
+    "nonpayable"
+  >;
+
+  sendPushMessage: TypedContractMethod<
+    [_destinationChainID: BigNumberish, _message: string],
+    [bigint],
+    "payable"
+  >;
+
+  sequence: TypedContractMethod<[], [bigint], "view">;
+
   updateRegistration: TypedContractMethod<
-    [_chainID: BigNumberish, _contractAddress: AddressLike],
+    [_chainID: BigNumberish, _contractAddress: BytesLike],
     [void],
     "nonpayable"
   >;
@@ -733,8 +925,19 @@ export interface QueryDemo extends BaseContract {
     nameOrSignature: "VERSION"
   ): TypedContractMethod<[], [bigint], "view">;
   getFunction(
-    nameOrSignature: "getMyCounter"
-  ): TypedContractMethod<[], [bigint], "view">;
+    nameOrSignature: "decodeMessage"
+  ): TypedContractMethod<
+    [encodedMessage: BytesLike],
+    [QueryPushPullDemo.MessageStructOutput],
+    "view"
+  >;
+  getFunction(
+    nameOrSignature: "encodeMessage"
+  ): TypedContractMethod<
+    [parsedMessage: QueryPushPullDemo.MessageStruct],
+    [string],
+    "view"
+  >;
   getFunction(
     nameOrSignature: "getResponseDigest"
   ): TypedContractMethod<[response: BytesLike], [string], "view">;
@@ -742,8 +945,14 @@ export interface QueryDemo extends BaseContract {
     nameOrSignature: "getResponseHash"
   ): TypedContractMethod<[response: BytesLike], [string], "view">;
   getFunction(
-    nameOrSignature: "getState"
-  ): TypedContractMethod<[], [QueryDemo.ChainEntryStructOutput[]], "view">;
+    nameOrSignature: "hasReceivedMessage"
+  ): TypedContractMethod<[digest: BytesLike], [boolean], "view">;
+  getFunction(
+    nameOrSignature: "hasReceivedPushMessage"
+  ): TypedContractMethod<[digest: BytesLike], [boolean], "view">;
+  getFunction(
+    nameOrSignature: "hasSentMessage"
+  ): TypedContractMethod<[digest: BytesLike], [boolean], "view">;
   getFunction(
     nameOrSignature: "parseAndVerifyQueryResponse"
   ): TypedContractMethod<
@@ -787,19 +996,43 @@ export interface QueryDemo extends BaseContract {
     "view"
   >;
   getFunction(
-    nameOrSignature: "responsePrefix"
-  ): TypedContractMethod<[], [string], "view">;
-  getFunction(
-    nameOrSignature: "updateCounters"
+    nameOrSignature: "receivePullMessages"
   ): TypedContractMethod<
-    [response: BytesLike, signatures: IWormhole.SignatureStruct[]],
+    [
+      response: BytesLike,
+      signatures: IWormhole.SignatureStruct[],
+      messages: BytesLike[]
+    ],
     [void],
     "nonpayable"
   >;
   getFunction(
+    nameOrSignature: "receivePushMessage"
+  ): TypedContractMethod<[encodedMessage: BytesLike], [void], "nonpayable">;
+  getFunction(
+    nameOrSignature: "responsePrefix"
+  ): TypedContractMethod<[], [string], "view">;
+  getFunction(
+    nameOrSignature: "sendPullMessage"
+  ): TypedContractMethod<
+    [_destinationChainID: BigNumberish, _message: string],
+    [bigint],
+    "nonpayable"
+  >;
+  getFunction(
+    nameOrSignature: "sendPushMessage"
+  ): TypedContractMethod<
+    [_destinationChainID: BigNumberish, _message: string],
+    [bigint],
+    "payable"
+  >;
+  getFunction(
+    nameOrSignature: "sequence"
+  ): TypedContractMethod<[], [bigint], "view">;
+  getFunction(
     nameOrSignature: "updateRegistration"
   ): TypedContractMethod<
-    [_chainID: BigNumberish, _contractAddress: AddressLike],
+    [_chainID: BigNumberish, _contractAddress: BytesLike],
     [void],
     "nonpayable"
   >;
@@ -857,5 +1090,60 @@ export interface QueryDemo extends BaseContract {
     nameOrSignature: "wormhole"
   ): TypedContractMethod<[], [string], "view">;
 
-  filters: {};
+  getEvent(
+    key: "pullMessagePublished"
+  ): TypedContractEvent<
+    pullMessagePublishedEvent.InputTuple,
+    pullMessagePublishedEvent.OutputTuple,
+    pullMessagePublishedEvent.OutputObject
+  >;
+  getEvent(
+    key: "pullMessageReceived"
+  ): TypedContractEvent<
+    pullMessageReceivedEvent.InputTuple,
+    pullMessageReceivedEvent.OutputTuple,
+    pullMessageReceivedEvent.OutputObject
+  >;
+  getEvent(
+    key: "pushMessageReceived"
+  ): TypedContractEvent<
+    pushMessageReceivedEvent.InputTuple,
+    pushMessageReceivedEvent.OutputTuple,
+    pushMessageReceivedEvent.OutputObject
+  >;
+
+  filters: {
+    "pullMessagePublished(uint8,uint64,uint16,string)": TypedContractEvent<
+      pullMessagePublishedEvent.InputTuple,
+      pullMessagePublishedEvent.OutputTuple,
+      pullMessagePublishedEvent.OutputObject
+    >;
+    pullMessagePublished: TypedContractEvent<
+      pullMessagePublishedEvent.InputTuple,
+      pullMessagePublishedEvent.OutputTuple,
+      pullMessagePublishedEvent.OutputObject
+    >;
+
+    "pullMessageReceived(uint16,uint8,uint64,uint16,string)": TypedContractEvent<
+      pullMessageReceivedEvent.InputTuple,
+      pullMessageReceivedEvent.OutputTuple,
+      pullMessageReceivedEvent.OutputObject
+    >;
+    pullMessageReceived: TypedContractEvent<
+      pullMessageReceivedEvent.InputTuple,
+      pullMessageReceivedEvent.OutputTuple,
+      pullMessageReceivedEvent.OutputObject
+    >;
+
+    "pushMessageReceived(uint16,uint8,uint64,uint16,string)": TypedContractEvent<
+      pushMessageReceivedEvent.InputTuple,
+      pushMessageReceivedEvent.OutputTuple,
+      pushMessageReceivedEvent.OutputObject
+    >;
+    pushMessageReceived: TypedContractEvent<
+      pushMessageReceivedEvent.InputTuple,
+      pushMessageReceivedEvent.OutputTuple,
+      pushMessageReceivedEvent.OutputObject
+    >;
+  };
 }
