@@ -274,30 +274,6 @@ export type SolanaPdaQueryResponseStructOutput = [
   results: SolanaPdaResultStructOutput[];
 };
 
-export declare namespace QueryDemo {
-  export type ChainEntryStruct = {
-    chainID: BigNumberish;
-    contractAddress: AddressLike;
-    counter: BigNumberish;
-    blockNum: BigNumberish;
-    blockTime: BigNumberish;
-  };
-
-  export type ChainEntryStructOutput = [
-    chainID: bigint,
-    contractAddress: string,
-    counter: bigint,
-    blockNum: bigint,
-    blockTime: bigint
-  ] & {
-    chainID: bigint;
-    contractAddress: string;
-    counter: bigint;
-    blockNum: bigint;
-    blockTime: bigint;
-  };
-}
-
 export declare namespace IWormhole {
   export type SignatureStruct = {
     r: BytesLike;
@@ -314,7 +290,7 @@ export declare namespace IWormhole {
   ] & { r: string; s: string; v: bigint; guardianIndex: bigint };
 }
 
-export interface QueryDemoInterface extends Interface {
+export interface QueryResponseInterface extends Interface {
   getFunction(
     nameOrSignature:
       | "QT_ETH_CALL"
@@ -324,10 +300,8 @@ export interface QueryDemoInterface extends Interface {
       | "QT_SOL_ACCOUNT"
       | "QT_SOL_PDA"
       | "VERSION"
-      | "getMyCounter"
       | "getResponseDigest"
       | "getResponseHash"
-      | "getState"
       | "parseAndVerifyQueryResponse"
       | "parseEthCallByTimestampQueryResponse"
       | "parseEthCallQueryResponse"
@@ -335,8 +309,6 @@ export interface QueryDemoInterface extends Interface {
       | "parseSolanaAccountQueryResponse"
       | "parseSolanaPdaQueryResponse"
       | "responsePrefix"
-      | "updateCounters"
-      | "updateRegistration"
       | "validateBlockNum"
       | "validateBlockTime"
       | "validateChainId"
@@ -369,10 +341,6 @@ export interface QueryDemoInterface extends Interface {
   ): string;
   encodeFunctionData(functionFragment: "VERSION", values?: undefined): string;
   encodeFunctionData(
-    functionFragment: "getMyCounter",
-    values?: undefined
-  ): string;
-  encodeFunctionData(
     functionFragment: "getResponseDigest",
     values: [BytesLike]
   ): string;
@@ -380,7 +348,6 @@ export interface QueryDemoInterface extends Interface {
     functionFragment: "getResponseHash",
     values: [BytesLike]
   ): string;
-  encodeFunctionData(functionFragment: "getState", values?: undefined): string;
   encodeFunctionData(
     functionFragment: "parseAndVerifyQueryResponse",
     values: [BytesLike, IWormhole.SignatureStruct[]]
@@ -408,14 +375,6 @@ export interface QueryDemoInterface extends Interface {
   encodeFunctionData(
     functionFragment: "responsePrefix",
     values?: undefined
-  ): string;
-  encodeFunctionData(
-    functionFragment: "updateCounters",
-    values: [BytesLike, IWormhole.SignatureStruct[]]
-  ): string;
-  encodeFunctionData(
-    functionFragment: "updateRegistration",
-    values: [BigNumberish, AddressLike]
   ): string;
   encodeFunctionData(
     functionFragment: "validateBlockNum",
@@ -463,10 +422,6 @@ export interface QueryDemoInterface extends Interface {
   decodeFunctionResult(functionFragment: "QT_SOL_PDA", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "VERSION", data: BytesLike): Result;
   decodeFunctionResult(
-    functionFragment: "getMyCounter",
-    data: BytesLike
-  ): Result;
-  decodeFunctionResult(
     functionFragment: "getResponseDigest",
     data: BytesLike
   ): Result;
@@ -474,7 +429,6 @@ export interface QueryDemoInterface extends Interface {
     functionFragment: "getResponseHash",
     data: BytesLike
   ): Result;
-  decodeFunctionResult(functionFragment: "getState", data: BytesLike): Result;
   decodeFunctionResult(
     functionFragment: "parseAndVerifyQueryResponse",
     data: BytesLike
@@ -504,14 +458,6 @@ export interface QueryDemoInterface extends Interface {
     data: BytesLike
   ): Result;
   decodeFunctionResult(
-    functionFragment: "updateCounters",
-    data: BytesLike
-  ): Result;
-  decodeFunctionResult(
-    functionFragment: "updateRegistration",
-    data: BytesLike
-  ): Result;
-  decodeFunctionResult(
     functionFragment: "validateBlockNum",
     data: BytesLike
   ): Result;
@@ -538,11 +484,11 @@ export interface QueryDemoInterface extends Interface {
   decodeFunctionResult(functionFragment: "wormhole", data: BytesLike): Result;
 }
 
-export interface QueryDemo extends BaseContract {
-  connect(runner?: ContractRunner | null): QueryDemo;
+export interface QueryResponse extends BaseContract {
+  connect(runner?: ContractRunner | null): QueryResponse;
   waitForDeployment(): Promise<this>;
 
-  interface: QueryDemoInterface;
+  interface: QueryResponseInterface;
 
   queryFilter<TCEvent extends TypedContractEvent>(
     event: TCEvent,
@@ -595,8 +541,6 @@ export interface QueryDemo extends BaseContract {
 
   VERSION: TypedContractMethod<[], [bigint], "view">;
 
-  getMyCounter: TypedContractMethod<[], [bigint], "view">;
-
   getResponseDigest: TypedContractMethod<
     [response: BytesLike],
     [string],
@@ -604,12 +548,6 @@ export interface QueryDemo extends BaseContract {
   >;
 
   getResponseHash: TypedContractMethod<[response: BytesLike], [string], "view">;
-
-  getState: TypedContractMethod<
-    [],
-    [QueryDemo.ChainEntryStructOutput[]],
-    "view"
-  >;
 
   parseAndVerifyQueryResponse: TypedContractMethod<
     [response: BytesLike, signatures: IWormhole.SignatureStruct[]],
@@ -648,18 +586,6 @@ export interface QueryDemo extends BaseContract {
   >;
 
   responsePrefix: TypedContractMethod<[], [string], "view">;
-
-  updateCounters: TypedContractMethod<
-    [response: BytesLike, signatures: IWormhole.SignatureStruct[]],
-    [void],
-    "nonpayable"
-  >;
-
-  updateRegistration: TypedContractMethod<
-    [_chainID: BigNumberish, _contractAddress: AddressLike],
-    [void],
-    "nonpayable"
-  >;
 
   validateBlockNum: TypedContractMethod<
     [_blockNum: BigNumberish, _minBlockNum: BigNumberish],
@@ -733,17 +659,11 @@ export interface QueryDemo extends BaseContract {
     nameOrSignature: "VERSION"
   ): TypedContractMethod<[], [bigint], "view">;
   getFunction(
-    nameOrSignature: "getMyCounter"
-  ): TypedContractMethod<[], [bigint], "view">;
-  getFunction(
     nameOrSignature: "getResponseDigest"
   ): TypedContractMethod<[response: BytesLike], [string], "view">;
   getFunction(
     nameOrSignature: "getResponseHash"
   ): TypedContractMethod<[response: BytesLike], [string], "view">;
-  getFunction(
-    nameOrSignature: "getState"
-  ): TypedContractMethod<[], [QueryDemo.ChainEntryStructOutput[]], "view">;
   getFunction(
     nameOrSignature: "parseAndVerifyQueryResponse"
   ): TypedContractMethod<
@@ -789,20 +709,6 @@ export interface QueryDemo extends BaseContract {
   getFunction(
     nameOrSignature: "responsePrefix"
   ): TypedContractMethod<[], [string], "view">;
-  getFunction(
-    nameOrSignature: "updateCounters"
-  ): TypedContractMethod<
-    [response: BytesLike, signatures: IWormhole.SignatureStruct[]],
-    [void],
-    "nonpayable"
-  >;
-  getFunction(
-    nameOrSignature: "updateRegistration"
-  ): TypedContractMethod<
-    [_chainID: BigNumberish, _contractAddress: AddressLike],
-    [void],
-    "nonpayable"
-  >;
   getFunction(
     nameOrSignature: "validateBlockNum"
   ): TypedContractMethod<
