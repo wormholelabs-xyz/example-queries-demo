@@ -16,12 +16,14 @@ import {
     InvalidContractAddress,
     QueryResponse
 } from "wormhole-solidity-sdk/QueryResponse.sol";
+import {QueryTestHelpers, PerChainData} from "./helpers/QueryTestHelpers.sol";
 import {WormholeMock} from "wormhole-solidity-sdk/testing/helpers/WormholeMock.sol";
 import {IWormhole} from "wormhole-solidity-sdk/interfaces/IWormhole.sol";
 import {QueryTest} from "wormhole-solidity-sdk/testing/helpers/QueryTest.sol";
 
 contract QueryResponseContract is QueryResponse {
     constructor(address _wormhole) QueryResponse(_wormhole) {}
+    function test() public {}
 }
 
 struct QueryResponseParams {
@@ -33,37 +35,13 @@ struct QueryResponseParams {
     bytes concatenatedPerChainResponses;
 }
 
-// Define a struct to hold per-chain data
-struct PerChainData {
-    uint16 chainId;
-    uint64 blockNum;
-    bytes32 blockHash;
-    uint64 blockTime;
-    address contractAddress;
-    bytes[] result;
-}
-
-// Define a struct to hold response data
-struct ResponseData {
-    bytes response;
-    IWormhole.Signature[] signatures;
-}
-
-contract QueryDemoTest is Test {
+contract QueryDemoTest is Test, QueryTestHelpers {
     QueryDemo public demo;
     WormholeMock wormholeMock;
-    QueryResponse queryResponse;
 
     uint16 constant myChainId = 2;
     address constant addr1 = address(0x1234);
-    uint256 constant DEVNET_GUARDIAN_PRIVATE_KEY = 0xcfb12303a19cde580bb4dd771639b0d26bc68353645571a8cff516ab2ee113a0;
-    uint8 constant VERSION = 0x01;
-    uint16 constant SENDER_CHAIN_ID = 0x0000;
-    uint32 constant NONCE = 0xdd9914c6;
-    uint64 constant BLOCK_NUM = 44440260;
-    uint64 constant BLOCK_TIME = 1687961579;
-    bytes constant SIGNATURE =
-        hex"ff0c222dc9e3655ec38e212e9792bf1860356d1277462b6bf747db865caca6fc08e6317b64ee3245264e371146b1d315d38c867fe1f69614368dc4430bb560f200";
+    bytes4 constant selector = bytes4(hex"916d5743");
 
     function setUp() public {
         wormholeMock = new WormholeMock();
@@ -129,8 +107,12 @@ contract QueryDemoTest is Test {
 
         PerChainData[] memory perChainData =
             buildSinglePerChainData(0x01, BLOCK_NUM, uint64(BLOCK_TIME * 1e6), address(0x1), 100);
-        (bytes memory response, IWormhole.Signature[] memory signatures) =
-            prepareResponses(perChainData, demo.GetMyCounter());
+        (bytes memory response, IWormhole.Signature[] memory signatures) = prepareResponses(
+            perChainData,
+            new bytes(0), // empty bytes for callData
+            selector,
+            new bytes(0) // empty bytes for finality
+        );
 
         assertEq(demo.getMyCounter(), 0);
 
@@ -150,8 +132,12 @@ contract QueryDemoTest is Test {
 
         PerChainData[] memory perChainData =
             buildSinglePerChainData(0x01, BLOCK_NUM, uint64(BLOCK_TIME * 1e6), address(0x1), 100);
-        (bytes memory response, IWormhole.Signature[] memory signatures) =
-            prepareResponses(perChainData, demo.GetMyCounter());
+        (bytes memory response, IWormhole.Signature[] memory signatures) = prepareResponses(
+            perChainData,
+            new bytes(0), // empty bytes for callData
+            selector,
+            new bytes(0) // empty bytes for finality
+        );
 
         demo.updateCounters(response, signatures);
 
@@ -165,7 +151,12 @@ contract QueryDemoTest is Test {
 
         perChainData = buildSinglePerChainData(0x01, BLOCK_NUM, uint64(BLOCK_TIME * 1e6), address(0x1), 101);
 
-        (response, signatures) = prepareResponses(perChainData, demo.GetMyCounter());
+        (response, signatures) = prepareResponses(
+            perChainData,
+            new bytes(0), // empty bytes for callData
+            selector,
+            new bytes(0) // empty bytes for finality
+        );
 
         demo.updateCounters(response, signatures);
 
@@ -200,8 +191,12 @@ contract QueryDemoTest is Test {
 
         PerChainData[] memory perChainData = buildMultiplePerChainData(chainIds, BLOCK_NUM, addresses, results);
 
-        (bytes memory response, IWormhole.Signature[] memory signatures) =
-            prepareResponses(perChainData, demo.GetMyCounter());
+        (bytes memory response, IWormhole.Signature[] memory signatures) = prepareResponses(
+            perChainData,
+            new bytes(0), // empty bytes for callData
+            selector,
+            new bytes(0) // empty bytes for finality
+        );
 
         demo.updateCounters(response, signatures);
 
@@ -238,8 +233,12 @@ contract QueryDemoTest is Test {
         results[1] = 101;
 
         PerChainData[] memory perChainData = buildMultiplePerChainData(chainIds, BLOCK_NUM, addresses, results);
-        (bytes memory response, IWormhole.Signature[] memory signatures) =
-            prepareResponses(perChainData, demo.GetMyCounter());
+        (bytes memory response, IWormhole.Signature[] memory signatures) = prepareResponses(
+            perChainData,
+            new bytes(0), // empty bytes for callData
+            selector,
+            new bytes(0) // empty bytes for finality
+        );
 
         vm.expectRevert(InvalidForeignChainID.selector);
         demo.updateCounters(response, signatures);
@@ -268,8 +267,12 @@ contract QueryDemoTest is Test {
 
         PerChainData[] memory perChainData = buildMultiplePerChainData(chainIds, BLOCK_NUM, addresses, results);
 
-        (bytes memory response, IWormhole.Signature[] memory signatures) =
-            prepareResponses(perChainData, demo.GetMyCounter());
+        (bytes memory response, IWormhole.Signature[] memory signatures) = prepareResponses(
+            perChainData,
+            new bytes(0), // empty bytes for callData
+            selector,
+            new bytes(0) // empty bytes for finality
+        );
 
         // Expect the function to revert due to an unexpected number of responses
         vm.expectRevert(UnexpectedResultLength.selector);
@@ -286,15 +289,24 @@ contract QueryDemoTest is Test {
         PerChainData[] memory perChainData =
             buildSinglePerChainData(0x01, BLOCK_NUM, uint64(BLOCK_TIME * 1e6), address(0x1), 100);
 
-        (bytes memory response, IWormhole.Signature[] memory signatures) =
-            prepareResponses(perChainData, demo.GetMyCounter());
+        (bytes memory response, IWormhole.Signature[] memory signatures) = prepareResponses(
+            perChainData,
+            new bytes(0), // empty bytes for callData
+            selector,
+            new bytes(0) // empty bytes for finality
+        );
 
         demo.updateCounters(response, signatures);
 
         // try to update counter with a stale block number
         perChainData = buildSinglePerChainData(0x01, BLOCK_NUM - 1, uint64(BLOCK_TIME * 1e6), address(0x1), 100);
 
-        (response, signatures) = prepareResponses(perChainData, demo.GetMyCounter());
+        (response, signatures) = prepareResponses(
+            perChainData,
+            new bytes(0), // empty bytes for callData
+            selector,
+            new bytes(0) // empty bytes for finality
+        );
 
         vm.expectRevert(StaleBlockNum.selector);
         demo.updateCounters(response, signatures);
@@ -311,15 +323,24 @@ contract QueryDemoTest is Test {
         PerChainData[] memory perChainData =
             buildSinglePerChainData(0x01, BLOCK_NUM, uint64(BLOCK_TIME * 1e6), address(0x1), 100);
 
-        (bytes memory response, IWormhole.Signature[] memory signatures) =
-            prepareResponses(perChainData, demo.GetMyCounter());
+        (bytes memory response, IWormhole.Signature[] memory signatures) = prepareResponses(
+            perChainData,
+            new bytes(0), // empty bytes for callData
+            selector,
+            new bytes(0) // empty bytes for finality
+        );
 
         demo.updateCounters(response, signatures);
 
         // try to update counter with a stale block time
         perChainData = buildSinglePerChainData(0x01, BLOCK_NUM, uint64((BLOCK_TIME - 301) * 1e6), address(0x1), 100);
 
-        (response, signatures) = prepareResponses(perChainData, demo.GetMyCounter());
+        (response, signatures) = prepareResponses(
+            perChainData,
+            new bytes(0), // empty bytes for callData
+            selector,
+            new bytes(0) // empty bytes for finality
+        );
 
         vm.expectRevert(StaleBlockTime.selector);
         demo.updateCounters(response, signatures);
@@ -338,8 +359,12 @@ contract QueryDemoTest is Test {
         PerChainData[] memory perChainData =
             buildSinglePerChainData(0x01, BLOCK_NUM, uint64(BLOCK_TIME * 1e6), address(0x1), 100);
 
-        (bytes memory response, IWormhole.Signature[] memory signatures) =
-            prepareResponses(perChainData, invalidSignature);
+        (bytes memory response, IWormhole.Signature[] memory signatures) = prepareResponses(
+            perChainData,
+            new bytes(0), // empty bytes for callData
+            invalidSignature,
+            new bytes(0) // empty bytes for finality
+        );
 
         vm.expectRevert(InvalidFunctionSignature.selector);
         demo.updateCounters(response, signatures);
@@ -355,8 +380,12 @@ contract QueryDemoTest is Test {
         PerChainData[] memory perChainData =
             buildSinglePerChainData(0x01, BLOCK_NUM, uint64(BLOCK_TIME * 1e6), address(0x3), 100);
 
-        (bytes memory response, IWormhole.Signature[] memory signatures) =
-            prepareResponses(perChainData, demo.GetMyCounter());
+        (bytes memory response, IWormhole.Signature[] memory signatures) = prepareResponses(
+            perChainData,
+            new bytes(0), // empty bytes for callData
+            selector,
+            new bytes(0) // empty bytes for finality
+        );
 
         vm.expectRevert(InvalidContractAddress.selector);
         demo.updateCounters(response, signatures);
@@ -383,8 +412,12 @@ contract QueryDemoTest is Test {
             result: results
         });
 
-        (bytes memory response, IWormhole.Signature[] memory signatures) =
-            prepareResponses(perChainData, demo.GetMyCounter());
+        (bytes memory response, IWormhole.Signature[] memory signatures) = prepareResponses(
+            perChainData,
+            new bytes(0), // empty bytes for callData
+            selector,
+            new bytes(0) // empty bytes for finality
+        );
 
         vm.expectRevert("result is not a uint256");
         demo.updateCounters(response, signatures);
@@ -411,8 +444,12 @@ contract QueryDemoTest is Test {
             result: results
         });
 
-        (bytes memory response, IWormhole.Signature[] memory signatures) =
-            prepareResponses(perChainData, demo.GetMyCounter());
+        (bytes memory response, IWormhole.Signature[] memory signatures) = prepareResponses(
+            perChainData,
+            new bytes(0), // empty bytes for callData
+            selector,
+            new bytes(0) // empty bytes for finality
+        );
 
         vm.expectRevert(UnexpectedResultMismatch.selector);
         demo.updateCounters(response, signatures);
@@ -465,8 +502,12 @@ contract QueryDemoTest is Test {
 
         PerChainData[] memory perChainData = buildMultiplePerChainData(chainIds, BLOCK_NUM, addresses, results);
 
-        (bytes memory response, IWormhole.Signature[] memory signatures) =
-            prepareResponses(perChainData, demo.GetMyCounter());
+        (bytes memory response, IWormhole.Signature[] memory signatures) = prepareResponses(
+            perChainData,
+            new bytes(0), // empty bytes for callData
+            selector,
+            new bytes(0) // empty bytes for finality
+        );
 
         demo.updateCounters(response, signatures);
 
@@ -480,201 +521,5 @@ contract QueryDemoTest is Test {
         assertEq(state[2].counter, result3);
         assertEq(state[2].blockNum, BLOCK_NUM);
         assertEq(state[2].blockTime, BLOCK_TIME);
-    }
-
-    // === Helper functions ===
-
-    // Generates a signature for the given response
-    function getSignature(bytes memory response) internal view returns (uint8 v, bytes32 r, bytes32 s) {
-        bytes32 responseDigest = queryResponse.getResponseDigest(response);
-        (v, r, s) = vm.sign(DEVNET_GUARDIAN_PRIVATE_KEY, responseDigest);
-    }
-
-    // Prepares responses and signatures for the given per-chain data
-    function prepareResponses(PerChainData[] memory perChainData, bytes4 selector)
-        internal
-        view
-        returns (bytes memory response, IWormhole.Signature[] memory signatures)
-    {
-        require(perChainData.length > 0, "Array length cannot be zero");
-
-        bytes[] memory perChainResponses = new bytes[](perChainData.length);
-        bytes[] memory perChainQueries = new bytes[](perChainData.length);
-
-        for (uint256 i = 0; i < perChainData.length; i++) {
-            perChainResponses[i] = buildPerChainResponse(
-                perChainData[i].chainId,
-                perChainData[i].blockNum,
-                perChainData[i].blockHash,
-                perChainData[i].blockTime,
-                perChainData[i].result
-            );
-            perChainQueries[i] = buildPerChainQuery(
-                perChainData[i].chainId,
-                perChainData[i].blockNum,
-                perChainData[i].contractAddress,
-                uint8(perChainData[i].result.length),
-                selector
-            );
-        }
-
-        ResponseData memory responseData = buildResponseData(perChainQueries, perChainResponses);
-        return (responseData.response, responseData.signatures);
-    }
-
-    // Builds the response data from per-chain queries and responses
-    function buildResponseData(bytes[] memory perChainQueries, bytes[] memory perChainResponses)
-        internal
-        view
-        returns (ResponseData memory)
-    {
-        bytes memory concatenatedPerChainQueries = concatenateBytesArrays(perChainQueries);
-        bytes memory concatenatedPerChainResponses = concatenateBytesArrays(perChainResponses);
-
-        bytes memory response = concatenateQueryResponseBytesOffChain(
-            VERSION,
-            SENDER_CHAIN_ID,
-            SIGNATURE,
-            VERSION,
-            NONCE,
-            uint8(perChainQueries.length),
-            concatenatedPerChainQueries,
-            uint8(perChainResponses.length),
-            concatenatedPerChainResponses
-        );
-
-        (uint8 sigV, bytes32 sigR, bytes32 sigS) = getSignature(response);
-        IWormhole.Signature[] memory signatures = new IWormhole.Signature[](1);
-        signatures[0] = IWormhole.Signature({r: sigR, s: sigS, v: sigV, guardianIndex: 0});
-
-        return ResponseData({response: response, signatures: signatures});
-    }
-
-    // wrapper method to `buildPerChainResponseBytes`
-    function buildPerChainResponse(
-        uint16 _chainId,
-        uint64 _blockNum,
-        bytes32 _blockHash,
-        uint64 _blockTime,
-        bytes[] memory _results
-    ) internal view returns (bytes memory) {
-        bytes memory ethCallResults = new bytes(0);
-        for (uint256 i = 0; i < _results.length; i++) {
-            ethCallResults = abi.encodePacked(ethCallResults, QueryTest.buildEthCallResultBytes(_results[i]));
-        }
-
-        return QueryTest.buildPerChainResponseBytes(
-            _chainId,
-            queryResponse.QT_ETH_CALL(),
-            QueryTest.buildEthCallResponseBytes(
-                _blockNum, _blockHash, _blockTime, uint8(_results.length), ethCallResults
-            )
-        );
-    }
-
-    // wrapper method to `buildPerChainRequestBytes`
-    function buildPerChainQuery(
-        uint16 _chainId,
-        uint64 _blockNum,
-        address _contractAddress,
-        uint8 numCalls,
-        bytes4 _selector
-    ) internal view returns (bytes memory) {
-        bytes memory callData = new bytes(0);
-        for (uint8 i = 0; i < numCalls; i++) {
-            callData = abi.encodePacked(
-                callData, QueryTest.buildEthCallDataBytes(_contractAddress, abi.encodeWithSelector(_selector))
-            );
-        }
-
-        return QueryTest.buildPerChainRequestBytes(
-            _chainId,
-            queryResponse.QT_ETH_CALL(),
-            QueryTest.buildEthCallRequestBytes(abi.encodePacked(_blockNum), numCalls, callData)
-        );
-    }
-
-    // Concatenates an array of `bytes` arrays into a single `bytes` array without encoding metadata.
-    function concatenateBytesArrays(bytes[] memory arrays) internal pure returns (bytes memory concatenated) {
-        uint256 totalLength = 0;
-        for (uint256 i = 0; i < arrays.length; i++) {
-            totalLength += arrays[i].length;
-        }
-
-        concatenated = new bytes(totalLength);
-        uint256 offset = 0;
-        for (uint256 i = 0; i < arrays.length; i++) {
-            bytes memory array = arrays[i];
-            for (uint256 j = 0; j < array.length; j++) {
-                concatenated[offset + j] = array[j];
-            }
-            offset += array.length;
-        }
-    }
-
-    // Concatenates query request and response bytes off-chain
-    function concatenateQueryResponseBytesOffChain(
-        uint8 _version,
-        uint16 _senderChainId,
-        bytes memory _signature,
-        uint8 _queryRequestVersion,
-        uint32 _queryRequestNonce,
-        uint8 _numPerChainQueries,
-        bytes memory _perChainQueries,
-        uint8 _numPerChainResponses,
-        bytes memory _perChainResponses
-    ) internal pure returns (bytes memory) {
-        bytes memory queryRequest = QueryTest.buildOffChainQueryRequestBytes(
-            _queryRequestVersion, _queryRequestNonce, _numPerChainQueries, _perChainQueries
-        );
-        return QueryTest.buildQueryResponseBytes(
-            _version, _senderChainId, _signature, queryRequest, _numPerChainResponses, _perChainResponses
-        );
-    }
-
-    // === Builder functions ===
-    function buildSinglePerChainData(
-        uint16 chainId,
-        uint64 blockNum,
-        uint64 blockTime,
-        address contractAddress,
-        uint256 result
-    ) internal view returns (PerChainData[] memory) {
-        PerChainData[] memory perChainData = new PerChainData[](1);
-        perChainData[0] = PerChainData({
-            chainId: chainId,
-            blockNum: blockNum,
-            blockHash: bytes32(blockhash(blockNum)),
-            blockTime: blockTime,
-            contractAddress: contractAddress,
-            result: new bytes[](1)
-        });
-        perChainData[0].result[0] = abi.encodePacked(result);
-        return perChainData;
-    }
-
-    function buildMultiplePerChainData(
-        uint16[] memory chainIds,
-        uint64 blockNum,
-        address[] memory contractAddresses,
-        uint256[] memory results
-    ) internal view returns (PerChainData[] memory) {
-        require(
-            chainIds.length == results.length && chainIds.length == contractAddresses.length,
-            "Mismatch in array lengths"
-        );
-        PerChainData[] memory perChainData = new PerChainData[](chainIds.length);
-        for (uint256 i = 0; i < chainIds.length; i++) {
-            perChainData[i] = PerChainData({
-                chainId: chainIds[i],
-                blockNum: blockNum,
-                blockHash: bytes32(blockhash(blockNum)),
-                blockTime: uint64(block.timestamp * 1e6),
-                contractAddress: contractAddresses[i],
-                result: new bytes[](1)
-            });
-            perChainData[i].result[0] = abi.encodePacked(results[i]);
-        }
-        return perChainData;
     }
 }
