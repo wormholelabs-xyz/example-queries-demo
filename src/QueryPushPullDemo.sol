@@ -128,8 +128,8 @@ contract QueryPushPullDemo is QueryResponse {
         IWormhole _wormhole = IWormhole(wormhole);
         uint256 wormholeFee = _wormhole.messageFee();
 
-        // Confirm that the caller has sent enough value to pay for the Wormhole message fee.
-        require(msg.value == wormholeFee, "insufficient value");
+        // Confirm that the caller has sent the correct value to pay for the Wormhole message fee.
+        require(msg.value == wormholeFee, "incorrect fee amount");
 
         Message memory parsedMessage =
             Message({payloadID: uint8(1), sequence: 0, destinationChainID: _destinationChainID, message: _message});
@@ -199,6 +199,7 @@ contract QueryPushPullDemo is QueryResponse {
         if (emitterAddress == bytes32(0)) {
             revert InvalidForeignChainID();
         }
+
         if (wormholeMessage.emitterAddress != emitterAddress) {
             revert InvalidContractAddress();
         }
