@@ -34,7 +34,7 @@ contract QueryDemo is QueryResponse {
     mapping(uint16 => ChainEntry) private counters;
     uint16[] private foreignChainIDs;
 
-    bytes4 GetMyCounter = bytes4(hex"916d5743");
+    bytes4 public GetMyCounter = bytes4(hex"916d5743");
 
     constructor(address _owner, address _wormhole, uint16 _myChainID) QueryResponse(_wormhole) {
         if (_owner == address(0)) {
@@ -79,7 +79,6 @@ contract QueryDemo is QueryResponse {
 
     // @notice Takes the cross chain query response for the other counters, stores the results for the other chains, and updates the counter for this chain.
     function updateCounters(bytes memory response, IWormhole.Signature[] memory signatures) public {
-        uint256 adjustedBlockTime;
         ParsedQueryResponse memory r = parseAndVerifyQueryResponse(response, signatures);
         uint256 numResponses = r.responses.length;
         if (numResponses != foreignChainIDs.length) {
@@ -116,7 +115,7 @@ contract QueryDemo is QueryResponse {
             require(eqr.result[0].result.length == 32, "result is not a uint256");
 
             chainEntry.blockNum = eqr.blockNum;
-            chainEntry.blockTime = adjustedBlockTime;
+            chainEntry.blockTime = eqr.blockTime / 1_000_000;
             chainEntry.counter = abi.decode(eqr.result[0].result, (uint256));
 
             unchecked {
