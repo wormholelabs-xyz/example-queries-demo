@@ -120,13 +120,14 @@ contract QueryPullAllDemo is QueryResponse {
         uint256 messageLength;
         (messageLength, index) = encodedMessage.asUint16(index);
 
+        // Check if the remaining bytes match the declared message length
+        // Checking here instead of after parsing the message to avoid array index out of bounds
+        require(encodedMessage.length - index == messageLength, "invalid message length");
+
         // parse the message string
         bytes memory messageBytes;
         (messageBytes, index) = encodedMessage.slice(index, messageLength);
         parsedMessage.message = string(messageBytes);
-
-        // confirm that the message was the expected length
-        require(index == encodedMessage.length, "invalid message length");
     }
 
     function sendPullMessage(uint16 _destinationChainID, string memory _message) public returns (bytes32) {
