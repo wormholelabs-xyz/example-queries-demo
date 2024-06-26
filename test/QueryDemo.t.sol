@@ -16,15 +16,10 @@ import {
     InvalidContractAddress,
     QueryResponse
 } from "wormhole-solidity-sdk/QueryResponse.sol";
-import {QueryTestHelpers, PerChainData} from "./helpers/QueryTestHelpers.sol";
+import {QueryTestHelpers, PerChainData, QueryResponseContract} from "./helpers/QueryTestHelpers.sol";
 import {WormholeMock} from "wormhole-solidity-sdk/testing/helpers/WormholeMock.sol";
 import {IWormhole} from "wormhole-solidity-sdk/interfaces/IWormhole.sol";
 import {QueryTest} from "wormhole-solidity-sdk/testing/helpers/QueryTest.sol";
-
-contract QueryResponseContract is QueryResponse {
-    constructor(address _wormhole) QueryResponse(_wormhole) {}
-    function test() public {}
-}
 
 struct QueryResponseParams {
     uint8 version;

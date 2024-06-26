@@ -20,6 +20,11 @@ struct ResponseData {
     IWormhole.Signature[] signatures;
 }
 
+contract QueryResponseContract is QueryResponse {
+    constructor(address _wormhole) QueryResponse(_wormhole) {}
+    function test() public {}
+}
+
 contract QueryTestHelpers is Test {
     uint8 constant VERSION = 0x01;
     uint16 constant SENDER_CHAIN_ID = 0x0000;
@@ -277,5 +282,9 @@ contract QueryTestHelpers is Test {
             perChainData[i].result[0] = abi.encodePacked(results[i]);
         }
         return perChainData;
+    }
+
+    function addressToBytes32(address addr) internal pure returns (bytes32) {
+        return bytes32(uint256(uint160(addr)));
     }
 }
